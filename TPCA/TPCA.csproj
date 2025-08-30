@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<TargetFramework>netstandard2.1</TargetFramework>
+	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>	  
+    <AssemblyName>TPCA</AssemblyName>
+    <Description>The Planet Crafter's plugin for Archipelago</Description>
+	<VersionPrefix>0.0.1</VersionPrefix>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <Import Project="$(SolutionDir)\solution_private.targets" />
+
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(GameManaged)\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(GameManaged)unityengine.ui.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.Netcode.Runtime">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(GameManaged)Unity.Netcode.Runtime.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.InputSystem">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(GameManaged)Unity.InputSystem.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Archipelago.MultiClient.Net" Version="6.6.1" />
+    <PackageReference Include="BepInEx.Analyzers" Version="1.0.8" PrivateAssets="all" />
+    <PackageReference Include="BepInEx.Core" Version="5.4.21" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="UnityEngine.Modules" Version="6000.1.9" IncludeAssets="compile" />
+  </ItemGroup>
+  
+  <Target Name="CopyDLLs" AfterTargets="PostBuildEvent">
+	<MakeDir Directories="bin/$(AssemblyName)" />
+	<Copy SourceFiles="Resources\ArchipelagoItem.png" DestinationFolder="bin/$(AssemblyName)" />
+	<Copy SourceFiles="$(OutputPath)/$(AssemblyName).dll;$(OutputPath)/Archipelago.MultiClient.Net.dll;$(OutputPath)/Newtonsoft.Json.dll;" DestinationFolder="bin/$(AssemblyName)" />
+	<Copy SourceFiles="bin/$(AssemblyName)/$(AssemblyName).dll;bin/$(AssemblyName)/Archipelago.MultiClient.Net.dll;bin/$(AssemblyName)/Newtonsoft.Json.dll;bin/$(AssemblyName)/ArchipelagoItem.png;" DestinationFolder="$(Destination)" />
+    <ZipDirectory SourceDirectory="bin/$(AssemblyName)" DestinationFile="$(OutputPath)\..\..\..\..\$(AssemblyName).zip" Overwrite="true" />
+  </Target>
+</Project>
