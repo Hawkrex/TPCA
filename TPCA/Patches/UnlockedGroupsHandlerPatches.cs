@@ -18,7 +18,7 @@ namespace TPCA.Patches
                 return true;
             }
 
-            Plugin.Log.LogInfo($"Unlocked location {group.GetGroupData().id}");
+            Plugin.Log.LogInfo($"Unlocked microchip location {group.GetGroupData().id}");
             Plugin.ArchipelagoClient.SendLocation(group.GetGroupData().id);
 
             return false;

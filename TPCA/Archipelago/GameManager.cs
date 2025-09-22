@@ -158,6 +158,7 @@ namespace TPCA.Archipelago
         {
             foreach (var unitType in (DataConfig.WorldUnitType[])Enum.GetValues(typeof(DataConfig.WorldUnitType)))
             {
+                // Copy from UnlockingHandler.GetUnitUnlockablesGroupSegment
                 var allGroups = GroupsHandler.GetAllGroups();
 
                 var groupsUnlocked = new List<Group>();
@@ -174,13 +175,14 @@ namespace TPCA.Archipelago
                     }
                 }
 
+                // Copy from AlertUnlockables.CheckIfNewUnlockableUnlocked
                 foreach (var group in groupsUnlocked)
                 {
                     if (!previouslyKnowUnlockedGroups.Contains(group))
                     {
                         if (hasInited)
                         {
-                            Plugin.Log.LogInfo($"SendLocation {group.id}");
+                            Plugin.Log.LogInfo($"Unlocked blueprint location {group.id}");
                             Plugin.ArchipelagoClient.SendLocation(group.id);
                         }
 
