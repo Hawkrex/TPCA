@@ -44,7 +44,6 @@ namespace TPCA.Archipelago
 
             if (!Plugin.ArchipelagoClient.IsConnected)
             {
-                Plugin.UpdateConnectionInfo(Plugin.State.Uri, Plugin.State.PlayerName, Plugin.State.Password);
                 Plugin.ArchipelagoClient.Connect();
             }
 
@@ -103,11 +102,6 @@ namespace TPCA.Archipelago
                 Plugin.Log.LogError("Mismatched seed detected. Did you load the right save?");
                 Plugin.ArchipelagoClient.Disconnect();
             }
-            else
-            {
-                Plugin.Log.LogInfo("UpdateConnectionInfo");
-                Plugin.UpdateConnectionInfo();
-            }
 
             Plugin.Log.LogInfo("Init save ...");
             Plugin.ArchipelagoClient.SyncLocations(Plugin.State.CheckedLocations);
@@ -142,6 +136,7 @@ namespace TPCA.Archipelago
         {
             CheckForLocationsUnlocked();
 
+            // Check for items received
             if (CanGetItem() && IncomingItems.TryDequeue(out var item))
             {
                 if (item.Index < Plugin.State.ItemIndex)
@@ -152,7 +147,7 @@ namespace TPCA.Archipelago
                 {
                     Plugin.Log.LogInfo($"Obtained item {item.Name}");
                     Plugin.State.ItemIndex++;
-                    var display = SendItem(item);
+                    var display = UnlockItem(item);
                 }
             }
         }
@@ -197,16 +192,16 @@ namespace TPCA.Archipelago
             hasInited = true;
         }
 
-        public static bool SendItem(ApItemInfo item)
+        public static bool UnlockItem(ApItemInfo item)
         {
-            Group groupToSend = AllGroups.FirstOrDefault(x => x.id == item.Name);
+            var groupToSend = AllGroups.FirstOrDefault(x => x.id == item.Name);
 
             if (groupToSend != null)
             {
-                // Boolean passed to the prefix patch to not skip the real method
-                Plugin.DontPrefix = true;
+                // Boolean passed to the prefix patch to execute the real method as we want to unlock a real TPC object
+                Plugin.DontPrefixUnlockGroupGlobally = true;
                 UnlockedGroupsHandler.Instance.UnlockGroupGlobally(groupToSend);
-                Plugin.DontPrefix = false;
+                Plugin.DontPrefixUnlockGroupGlobally = false;
             }
 
             return false;

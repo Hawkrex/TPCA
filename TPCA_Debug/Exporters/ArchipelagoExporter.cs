@@ -25,6 +25,7 @@ namespace TPCA_Debug.Exporters
             };
             archipelagoItems.AddRange(allGroups
                 .Select(x => x.GetGroupData())
+                // Maybe replace "&& (x.unlockingValue != 0 || x.terraformStageUnlock != null)" with && "x.recipeIngredients.Any()" but there's unkonwn items
                 .Where(x => !x.unlockInPlanets.Any() && (x.unlockingValue != 0 || x.terraformStageUnlock != null)) // Prime and blueprint tree item only
                 .Select(CreateArchipelagoItem));
 

@@ -6,27 +6,31 @@ namespace TPCA.Archipelago
     {
         public bool IsValid;
 
-        public string Uri;
+        public string Host;
         public string PlayerName;
         public string Password;
         public string Seed;
 
         public int ItemIndex { get; set; }
 
+        public ArchipelagoSaveInfos SaveInfos { get; set; }
+
         public SlotData SlotData;
 
         public List<long> CheckedLocations { get; set; } = [];
 
-        public ArchipelagoGameState(string uri, string slotName, string password)
+        public Dictionary<string, ApItemInfo> ItemByLocations { get; set; }
+
+        public ArchipelagoGameState(string host, string slotName, string password)
         {
-            Uri = uri;
+            Host = host;
             PlayerName = slotName;
             Password = password;
         }
 
-        public void UpdateConnection(string uri, string slotName, string password)
+        public void UpdateConnection(string host, string slotName, string password)
         {
-            Uri = uri;
+            Host = host;
             PlayerName = slotName;
             Password = password;
         }

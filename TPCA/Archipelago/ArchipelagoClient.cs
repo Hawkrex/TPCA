@@ -5,14 +5,18 @@ using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using TPCA.Datas;
+using UnityEngine;
 
 namespace TPCA.Archipelago
 {
     internal class ArchipelagoClient
     {
         private const string MinArchipelagoVersion = "0.6.2";
+        private const string GameName = "The Planet Crafter";
 
         public bool IsConnected => session?.Socket.Connected ?? false;
 
@@ -21,34 +25,31 @@ namespace TPCA.Archipelago
 
         private bool isAttemptingConnection;
 
-        public bool Connect()
+        public LoginResult TryConnect()
         {
             if (IsConnected || isAttemptingConnection)
             {
-                return false;
+                return new LoginFailure("Already trying to connect or already connected");
             }
 
-            if (string.IsNullOrWhiteSpace(Plugin.State.Uri))
+            if (string.IsNullOrWhiteSpace(Plugin.State.Host))
             {
-                Plugin.Log.LogWarning("Cannot connect to archipelago server: Host Name is null or empty");
-                return false;
+                return new LoginFailure("Host Name is null or empty");
             }
 
             if (string.IsNullOrWhiteSpace(Plugin.State.PlayerName))
             {
-                Plugin.Log.LogWarning("Cannot connect to archipelago server: Player Name is null or empty");
-                return false;
+                return new LoginFailure("Player Name is null or empty");
             }
 
             try
             {
-                session = ArchipelagoSessionFactory.CreateSession(Plugin.State.Uri);
+                session = ArchipelagoSessionFactory.CreateSession(Plugin.State.Host);
                 SetupSession();
             }
             catch (Exception ex)
             {
-                Plugin.Log.LogError($"Cannot create archipelago session: {ex}");
-                return false;
+                return new LoginFailure($"Cannot create archipelago session: {ex}");
             }
 
             LoginResult loginResult;
@@ -56,7 +57,7 @@ namespace TPCA.Archipelago
 
             try
             {
-                loginResult = session.TryConnectAndLogin("The Planet Crafter", Plugin.State.PlayerName, ItemsHandlingFlags.AllItems, new Version(MinArchipelagoVersion), tags: null, uuid: null, Plugin.State.Password, requestSlotData: true);
+                loginResult = session.TryConnectAndLogin(GameName, Plugin.State.PlayerName, ItemsHandlingFlags.AllItems, new Version(MinArchipelagoVersion), tags: null, uuid: null, Plugin.State.Password, requestSlotData: true);
             }
             catch (Exception ex)
             {
@@ -66,15 +67,25 @@ namespace TPCA.Archipelago
             if (loginResult is LoginFailure loginFailure)
             {
                 isAttemptingConnection = false;
-                Plugin.Log.LogError($"Cannot connect to archipelago server: {string.Join("\n", loginFailure.Errors)}");
                 session = null;
-                return false;
+                return new LoginFailure($"Cannot connect to AP server: {string.Join("\n", loginFailure.Errors)}");
             }
 
-            Plugin.Log.LogInfo($"Successfully connected to {Plugin.State.Uri} as {Plugin.State.PlayerName}");
-            OnConnect(loginResult as LoginSuccessful);
+            Plugin.Log.LogInfo($"Successfully connected to {Plugin.State.Host} as {Plugin.State.PlayerName}");
 
-            return true;
+            return loginResult as LoginSuccessful;
+        }
+
+        public bool Connect()
+        {
+            var loginResult = TryConnect();
+            if (loginResult is LoginSuccessful loginSuccessful)
+            {
+                OnConnect(loginSuccessful);
+                return true;
+            }
+
+            return false;
         }
 
         private void OnConnect(LoginSuccessful login)
@@ -86,6 +97,7 @@ namespace TPCA.Archipelago
 
             deathLinkHandler = new DeathLinkHandler(session.CreateDeathLinkService(), Plugin.State.PlayerName, Plugin.State.SlotData.DeathLink);
             isAttemptingConnection = false;
+            ScoutAllLocations();
         }
 
         private void SetupSession()
@@ -158,7 +170,7 @@ namespace TPCA.Archipelago
                 return;
             }
 
-            long locationId = session.Locations.GetLocationIdFromName("The Planet Crafter", locationName);
+            long locationId = session.Locations.GetLocationIdFromName(GameName, locationName);
             Plugin.Log.LogWarning($"Trying to send location {locationId}");
             _ = session.Locations.CompleteLocationChecksAsync(locationId);
         }
@@ -173,6 +185,41 @@ namespace TPCA.Archipelago
             Plugin.Log.LogInfo($"Sending location checks: {string.Join(", ", locations)}");
             _ = session.Locations.CompleteLocationChecksAsync([.. locations]);
             return true;
+        }
+
+        public void ScoutAllLocations()
+        {
+            if (!IsConnected)
+            {
+                return;
+            }
+
+            var scouts = session.Locations.ScoutLocationsAsync([.. session.Locations.AllLocations]).ContinueWith(task =>
+            {
+                Dictionary<string, ApItemInfo> itemByLocations = [];
+                foreach (var entry in task.Result)
+                {
+                    var player = entry.Value.Player;
+                    string playerName = player.Alias ?? player.Name ?? $"Player #{player.Slot}";
+
+                    itemByLocations[session.Locations.GetLocationNameFromId(entry.Key)] = new ApItemInfo
+                    {
+                        Name = entry.Value.ItemDisplayName,
+                        Flags = entry.Value.Flags,
+                        PlayerName = playerName,
+                        IsLocal = player == session.ConnectionInfo.Slot,
+                        IsTpcItem = entry.Value.ItemGame == GameName
+                    };
+                }
+                return itemByLocations;
+            });
+            scouts.Wait();
+            Plugin.State.ItemByLocations = scouts.Result;
+        }
+
+        public IEnumerable<string> GetLocationsNames()
+        {
+            return session.Locations.AllLocations.Select(x => session.Locations.GetLocationNameFromId(x));
         }
 
         public void SendCompletion()
@@ -211,6 +258,35 @@ namespace TPCA.Archipelago
         public void SendMessage(string message)
         {
             session?.Say(message);
+        }
+
+        internal bool CreateAndStoreGuid()
+        {
+            if (!IsConnected)
+            {
+                return false;
+            }
+
+            string guid = Guid.NewGuid().ToString();
+            Plugin.State.SaveInfos = new ArchipelagoSaveInfos
+            {
+                Guid = guid,
+                Host = Plugin.State.Host,
+                PlayerName = Plugin.State.PlayerName,
+                Password = Plugin.State.Password
+            };
+            session.DataStorage[$"{session.Players.ActivePlayer.Name}_Guid"] = Plugin.State.SaveInfos.Guid;
+            Plugin.Log.LogDebug($"Saved GUID <{(string)session.DataStorage[$"{session.Players.ActivePlayer.Name}_Guid"]}> for player <{session.Players.ActivePlayer.Name}>");
+
+            return true;
+        }
+
+        internal bool DoesGuidExist()
+        {
+            string savedGuid = session.DataStorage[$"{session.Players.ActivePlayer.Name}_Guid"];
+            Plugin.Log.LogDebug($"GUID <{savedGuid}> exists for player <{session.Players.ActivePlayer.Name}>");
+
+            return !string.IsNullOrEmpty(savedGuid);
         }
     }
 }

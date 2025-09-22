@@ -33,6 +33,11 @@
       <HintPath>$(GameManaged)Unity.InputSystem.dll</HintPath>
       <Private>False</Private>
     </Reference>
+	<Reference Include="Unity.TextMeshPro">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(GameManaged)Unity.TextMeshPro.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

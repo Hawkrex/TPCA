@@ -18,14 +18,6 @@ namespace TPCA_Debug.Patches
             Debug.AllGroups = groups;
         }
 
-        private static void ExportInJson(List<Group> groups)
-        {
-            string json = JsonConvert.SerializeObject(groups.Select(x => new GroupDataJson(x.GetGroupData())).ToArray(), Formatting.Indented);
-
-            //write string to file
-            System.IO.File.WriteAllText(@"./Groups.json", json);
-        }
-
         private static void ExportInLog(List<Group> groups)
         {
             foreach (var group in groups)

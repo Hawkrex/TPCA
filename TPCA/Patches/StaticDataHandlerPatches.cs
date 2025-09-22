@@ -4,7 +4,9 @@ using SpaceCraft;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using TPCA.Archipelago;
+using TPCA.Datas;
 using UnityEngine;
 
 namespace TPCA.Patches
@@ -16,6 +18,12 @@ namespace TPCA.Patches
         [HarmonyPrefix]
         public static bool LoadStaticData_Prefix(StaticDataHandler __instance)
         {
+            if (Plugin.ArchipelagoModeDeactivated || !Plugin.ArchipelagoClient.IsConnected)
+            {
+                Plugin.Log.LogDebug($"{nameof(LoadStaticData_Prefix)} => Archipelago mode deactivated or not connected to AP server");
+                return true;
+            }
+
             var groupsData = __instance.staticAvailableObjects.groupsData;
 
             GameManager.AllGroups = CreateGroups(groupsData);
@@ -27,18 +35,18 @@ namespace TPCA.Patches
 
         private static List<Group> CreateGroups(List<GroupData> groupsData)
         {
-            List<Group> list = new List<Group>();
+            var list = new List<Group>();
             foreach (GroupData groupData in groupsData)
             {
-                if (!(groupData == null))
+                if (groupData != null)
                 {
-                    if (groupData is GroupDataConstructible)
+                    if (groupData is GroupDataConstructible constructible)
                     {
-                        list.Add(new GroupConstructible((GroupDataConstructible)groupData));
+                        list.Add(new GroupConstructible(constructible));
                     }
-                    else if (groupData is GroupDataItem)
+                    else if (groupData is GroupDataItem item)
                     {
-                        list.Add(new GroupItem((GroupDataItem)groupData));
+                        list.Add(new GroupItem(item));
                     }
                 }
             }
@@ -47,7 +55,9 @@ namespace TPCA.Patches
 
         private static void RewriteGroups(List<GroupData> groupsData)
         {
-            Plugin.Log.LogInfo("RewriteGroups ...");
+            Plugin.Log.LogDebug("RewriteGroups ...");
+
+            var locationsNames = Plugin.ArchipelagoClient.GetLocationsNames();
 
             var list = new List<Group>();
 
@@ -55,9 +65,9 @@ namespace TPCA.Patches
             {
                 if (groupData is GroupDataConstructible constructible)
                 {
-                    if (ShouldReplace(groupData))
+                    if (IsAnArchipelagoLocation(groupData, locationsNames))
                     {
-                        list.Add(new GroupConstructible(CreateAPLocationConstructible(CloneGroupDataConstructible(constructible))));
+                        list.Add(new GroupLocation(CreateAPLocationConstructible(CloneGroupDataConstructible(constructible))));
                         list.Add(new GroupConstructible(CreateAPItemConstructible(CloneGroupDataConstructible(constructible))));
                     }
                     else
@@ -67,9 +77,9 @@ namespace TPCA.Patches
                 }
                 else if (groupData is GroupDataItem item)
                 {
-                    if (ShouldReplace(groupData))
+                    if (IsAnArchipelagoLocation(groupData, locationsNames))
                     {
-                        list.Add(new GroupItem(CreateAPLocationItem(CloneGroupDataItem(item))));
+                        list.Add(new GroupLocation(CreateAPLocationItem(CloneGroupDataItem(item))));
                         list.Add(new GroupItem(CreateAPItemItem(CloneGroupDataItem(item))));
                     }
                     else
@@ -78,8 +88,6 @@ namespace TPCA.Patches
                     }
                 }
             }
-
-            Plugin.Log.LogInfo("SetAllGroups ...");
 
             try
             {
@@ -101,25 +109,17 @@ namespace TPCA.Patches
                 Plugin.Log.LogError($"Error : {ex}");
             }
 
-            Plugin.Log.LogInfo("SetAllGroups done");
+            Plugin.Log.LogDebug("SetAllGroups done");
         }
 
-        private static bool ShouldReplace(GroupData groupData)
+        private static bool IsAnArchipelagoLocation(GroupData groupData, IEnumerable<string> locationsNames)
         {
-            if (groupData.unlockingValue != 0)
-            {
-                return true;
-            }
-
-            return false;
+            return locationsNames.Contains(groupData.id);
         }
 
         private static GroupDataConstructible CreateAPLocationConstructible(GroupDataConstructible gd)
         {
-            var texture = LoadTexture("ArchipelagoItem.png");
-
-            gd.id = $"{gd.unlockingWorldUnit}_{gd.unlockingValue}";
-            gd.icon = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), Vector2.zero);
+            gd.icon = ModifyIcon(gd);
             gd.groupCategory = DataConfig.GroupCategory.Null;
 
             return gd;
@@ -127,19 +127,32 @@ namespace TPCA.Patches
 
         private static GroupDataItem CreateAPLocationItem(GroupDataItem gd)
         {
-            var texture = LoadTexture("ArchipelagoItem.png");
-
-            gd.id = $"{gd.unlockingWorldUnit}_{gd.unlockingValue}";
-            gd.icon = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), Vector2.zero);
+            gd.icon = ModifyIcon(gd);
 
             return gd;
+        }
+
+        private static Sprite ModifyIcon(GroupData gd)
+        {
+            Texture2D texture;
+            var apItem = Plugin.State.ItemByLocations[gd.id];
+            if (apItem.IsTpcItem)
+            {
+                texture = GameManager.AllGroups.FirstOrDefault(x => x.id == apItem.Name).GetGroupData().icon.texture;
+            }
+            else
+            {
+                texture = LoadTexture("ArchipelagoItem.png");
+            }
+
+            return Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), Vector2.zero);
         }
 
         private static GroupDataConstructible CreateAPItemConstructible(GroupDataConstructible gd)
         {
             gd.unlockingValue = 0;
             gd.unlockingWorldUnit = DataConfig.WorldUnitType.Null;
-            
+
             return gd;
         }
 
@@ -240,7 +253,7 @@ namespace TPCA.Patches
         // From https://github.com/jotunnlib/jotunnlib/blob/90b20cb85a1c981324891246375b6460c87f76db/JotunnLib/Utils/AssetUtils.cs/#L18
         public static Texture2D LoadTexture(string texturePath)
         {
-            string path = Path.Combine(Paths.PluginPath, "TPCA", texturePath); // TODO : To change
+            string path = Path.Combine(Paths.PluginPath, "TPCA", texturePath);
 
             if (!File.Exists(path))
             {
