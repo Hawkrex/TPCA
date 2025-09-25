@@ -17,20 +17,50 @@ namespace TPCA.Patches
                 return true;
             }
 
-            if (Environment.StackTrace.Contains("AlertUnlockables"))
+            if (Environment.StackTrace.Contains(nameof(Archipelago.GameManager.UnlockItem))) // Item received from AP server
             {
-                Plugin.Log.LogDebug($"{nameof(PopNewUnlockable_Prefix)} => Location unlocked, modify the popup");
+                Plugin.Log.LogDebug($"{nameof(PopNewUnlockable_Prefix)} => Received item from AP server, modify the popup");
 
-                var popupData = new PopupData(_group.GetImage(), $"Send location to AP server : {_group.id}", 5f);
+                string message;
+                if (!Plugin.State.ItemByLocations.ContainsKey(_group.id))
+                {
+                    message = $"Received {_group.id}";
+                }
+                else
+                {
+                    message = $"Received {_group.id} from {Plugin.State.ItemByLocations[_group.id].PlayerName}";
+                }
+
+                var popupData = new PopupData(_group.GetImage(), message, 5f);
                 AccessTools.Method(typeof(PopupsHandler), "AddToList").Invoke(__instance, [popupData]);
 
                 return false;
             }
-            else
+            else if (Environment.StackTrace.Contains("AlertUnlockables")) // Sending location
             {
-                Plugin.Log.LogDebug($"{nameof(PopNewUnlockable_Prefix)} => TPC object unlocked, do not modify the popup");
-                return true;
+                if (!Plugin.State.ItemByLocations.ContainsKey(_group.id))
+                {
+                    Plugin.Log.LogWarning($"{nameof(PopNewUnlockable_Prefix)} => Couldn't find location <{_group.id}> in ItemByLocations dictionary");
+                    return false;
+                }
+                else
+                {
+                    var itemInfos = Plugin.State.ItemByLocations[_group.id];
+                    if (!itemInfos.IsLocal) // Send item to someone
+                    {
+                        Plugin.Log.LogDebug($"{nameof(PopNewUnlockable_Prefix)} => Location unlocked, modify the popup");
+
+                        var popupData = new PopupData(_group.GetImage(), $"Send item {itemInfos.Name} to {itemInfos.PlayerName}", 5f);
+                        AccessTools.Method(typeof(PopupsHandler), "AddToList").Invoke(__instance, [popupData]);
+                    }
+                    // Else, you'll get notified when receiving the item from the AP server
+                    // In both case, no need to execute the original code
+                    return false;
+                }
             }
+
+            Plugin.Log.LogDebug($"PopNewUnlockable_Prefix => {Environment.StackTrace}");
+            return true;
         }
     }
 }

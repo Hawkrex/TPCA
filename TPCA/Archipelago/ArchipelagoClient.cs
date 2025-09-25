@@ -149,11 +149,18 @@ namespace TPCA.Archipelago
             }
             itemName ??= item.ItemDisplayName;
 
-            Plugin.Log.LogInfo($"Received item #{index}: {item.ItemId} - {itemName}");
+            var player = item.Player;
+            var playerName = player.Alias ?? player.Name ?? $"Player #{player.Slot}";
+            
+            Plugin.Log.LogInfo($"{nameof(SessionItemReceived)} => Received item #{index}: {item.ItemId} - {itemName} from {playerName}");
             GameManager.IncomingItems.Enqueue(new()
             {
                 Name = itemName,
-                Index = index
+                Index = index,
+                Flags = item.Flags,
+                PlayerName = playerName,
+                IsLocal = player == session.ConnectionInfo.Slot,
+                IsTpcItem = true
             });
         }
 

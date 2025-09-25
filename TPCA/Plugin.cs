@@ -15,7 +15,6 @@ namespace TPCA
         internal static ArchipelagoGameState State;
 
         internal static bool ArchipelagoModeDeactivated;
-        internal static bool DontPrefixUnlockGroupGlobally;
 
         private static readonly Harmony harmony = new(MyPluginInfo.PLUGIN_GUID);
 

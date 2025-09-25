@@ -141,11 +141,11 @@ namespace TPCA.Archipelago
             {
                 if (item.Index < Plugin.State.ItemIndex)
                 {
-                    Plugin.Log.LogInfo($"Ignoring previously obtained item {item.Name}");
+                    Plugin.Log.LogInfo($"{nameof(Update)} => Ignoring previously obtained item {item.Name}");
                 }
                 else
                 {
-                    Plugin.Log.LogInfo($"Obtained item {item.Name}");
+                    Plugin.Log.LogInfo($"{nameof(Update)} => Obtained item {item.Name}");
                     Plugin.State.ItemIndex++;
                     var display = UnlockItem(item);
                 }
@@ -182,7 +182,7 @@ namespace TPCA.Archipelago
                     {
                         if (hasInited)
                         {
-                            Plugin.Log.LogInfo($"Unlocked blueprint location {group.id}");
+                            Plugin.Log.LogInfo($"{nameof(CheckForLocationsUnlocked)} => Unlocked blueprint location {group.id}");
                             Plugin.ArchipelagoClient.SendLocation(group.id);
                         }
 
@@ -197,13 +197,11 @@ namespace TPCA.Archipelago
         public static bool UnlockItem(ApItemInfo item)
         {
             var groupToSend = AllGroups.FirstOrDefault(x => x.id == item.Name);
+            Plugin.State.ItemByLocations[groupToSend.id] = item;
 
             if (groupToSend != null)
             {
-                // Boolean passed to the prefix patch to execute the real method as we want to unlock a real TPC object
-                Plugin.DontPrefixUnlockGroupGlobally = true;
                 UnlockedGroupsHandler.Instance.UnlockGroupGlobally(groupToSend);
-                Plugin.DontPrefixUnlockGroupGlobally = false;
             }
 
             return false;
