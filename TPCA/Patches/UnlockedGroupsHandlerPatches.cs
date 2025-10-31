@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using SpaceCraft;
 using System;
+using Unity.Netcode;
 
 namespace TPCA.Patches
 {
@@ -10,7 +11,7 @@ namespace TPCA.Patches
         // Blocks blueprint unlocks
         [HarmonyPatch(nameof(UnlockedGroupsHandler.UnlockGroupGlobally))]
         [HarmonyPrefix]
-        public static bool UnlockGroupGlobally_Prefix(Group group)
+        public static bool UnlockGroupGlobally_Prefix(Group group, NetworkList<int> ____unlockedGroups)
         {
             if (Plugin.ArchipelagoModeDeactivated
                 || Environment.StackTrace.Contains(nameof(Archipelago.GameManager.UnlockItem))) // Execute the original method when called from the plugin
@@ -21,6 +22,13 @@ namespace TPCA.Patches
 
             Plugin.Log.LogInfo($"{nameof(UnlockGroupGlobally_Prefix)} => Unlocked microchip location {group.GetGroupData().id}");
             Plugin.ArchipelagoClient.SendLocation(group.GetGroupData().id);
+
+            // Code from UnlockGroupGloballyServerRpc
+            // Fixes microchip blueprints not working after Tier1
+            if (!____unlockedGroups.Contains(group.stableHashCode))
+            {
+                ____unlockedGroups.Add(group.stableHashCode);
+            }
 
             return false;
         }

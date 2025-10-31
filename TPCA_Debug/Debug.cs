@@ -53,6 +53,26 @@ namespace TPCA_Debug
             }
 
             GUI.EndGroup();
+
+            GUI.BeginGroup(new(Screen.width - 610, 4, 304, 204));
+            GUI.Box(new(0, 0, 300, 200), string.Empty);
+
+            var giveMicrochipButton = GUI.Button(new(4, 4, 300, 20), "Give Microchip");
+            if (giveMicrochipButton)
+            {
+                var pm = Managers.GetManager<PlayersManager>().GetActivePlayerController();
+                var inv = pm.GetPlayerBackpack().GetInventory();
+                var gr = GroupsHandler.GetGroupViaId("BlueprintT1");
+                InventoriesHandler.Instance.AddItemToInventory(gr, inv, (success, id) =>
+                {
+                    if (!success && id != 0)
+                    {
+                        WorldObjectsHandler.Instance.DestroyWorldObject(id);
+                    }
+                });
+            }
+
+            GUI.EndGroup();
         }
 
         private static void SendItem(string groupId)
