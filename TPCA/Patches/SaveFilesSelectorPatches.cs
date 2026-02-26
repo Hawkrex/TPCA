@@ -10,13 +10,13 @@ namespace TPCA.Patches
         [HarmonyPostfix]
         public static void SelectedSaveFile_Postfix(string fileName)
         {
-            Plugin.Log.LogDebug($"{nameof(SelectedSaveFile_Postfix)} => Selected save <{fileName}>");
+            Plugin.Log.LogDebug($"{nameof(SaveFilesSelectorPatches)}::{nameof(SelectedSaveFile_Postfix)} => Selected save <{fileName}>");
 
             Plugin.ArchipelagoModeDeactivated = !JSONExportPatches.ArchipelagoInfosByNames.ContainsKey(fileName);
             
             if (Plugin.ArchipelagoModeDeactivated)
             {
-                Plugin.Log.LogDebug($"{nameof(SelectedSaveFile_Postfix)} => Archipelago mode deactivated");
+                Plugin.Log.LogDebug($"{nameof(SaveFilesSelectorPatches)}::{nameof(SelectedSaveFile_Postfix)} => Archipelago mode deactivated");
                 return;
             }
 
@@ -28,7 +28,7 @@ namespace TPCA.Patches
 
             if (Plugin.ArchipelagoClient.Connect())
             {
-                Plugin.Log.LogInfo("Automatic connection on save loading successful");
+                Plugin.Log.LogInfo($"{nameof(SaveFilesSelectorPatches)}::{nameof(SelectedSaveFile_Postfix)} => Automatic connection on save loading successful");
             }
 
             // TODO Check GUID

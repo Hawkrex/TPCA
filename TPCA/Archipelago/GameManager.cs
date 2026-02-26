@@ -81,7 +81,7 @@ namespace TPCA.Archipelago
 
             if (!Plugin.ArchipelagoClient.IsConnected)
             {
-                Plugin.Log.LogError("Not connected");
+                Plugin.Log.LogError($"{nameof(GameManager)}::{nameof(ConnectSave)} => Not connected");
                 return true;
             }
 
@@ -91,7 +91,7 @@ namespace TPCA.Archipelago
 
             if (saveNew)
             {
-                Plugin.Log.LogInfo("Save new");
+                Plugin.Log.LogInfo($"{nameof(GameManager)}::{nameof(ConnectSave)} => Save new");
                 saveNew = false;
                 Plugin.State.IsValid = true;
 
@@ -99,14 +99,14 @@ namespace TPCA.Archipelago
             }
             else if (seed != Plugin.State.Seed)
             {
-                Plugin.Log.LogError("Mismatched seed detected. Did you load the right save?");
+                Plugin.Log.LogError($"{nameof(GameManager)}::{nameof(ConnectSave)} => Mismatched seed detected. Did you load the right save?");
                 Plugin.ArchipelagoClient.Disconnect();
             }
 
-            Plugin.Log.LogInfo("Init save ...");
+            Plugin.Log.LogInfo($"{nameof(GameManager)}::{nameof(ConnectSave)} => Init save ...");
             Plugin.ArchipelagoClient.SyncLocations(Plugin.State.CheckedLocations);
             InitializeSave(isNew);
-            Plugin.Log.LogInfo("Init save done");
+            Plugin.Log.LogInfo($"{nameof(GameManager)}::{nameof(ConnectSave)} => Init save done");
 
             return true;
         }
@@ -141,11 +141,11 @@ namespace TPCA.Archipelago
             {
                 if (item.Index < Plugin.State.ItemIndex)
                 {
-                    Plugin.Log.LogInfo($"{nameof(Update)} => Ignoring previously obtained item {item.Name}");
+                    Plugin.Log.LogInfo($"{nameof(GameManager)}::{nameof(Update)} => Ignoring previously obtained item {item.Name}");
                 }
                 else
                 {
-                    Plugin.Log.LogInfo($"{nameof(Update)} => Obtained item {item.Name}");
+                    Plugin.Log.LogInfo($"{nameof(GameManager)}::{nameof(Update)} => Obtained item {item.Name}");
                     Plugin.State.ItemIndex++;
                     var display = UnlockItem(item);
                 }
@@ -182,7 +182,7 @@ namespace TPCA.Archipelago
                     {
                         if (hasInited)
                         {
-                            Plugin.Log.LogInfo($"{nameof(CheckForLocationsUnlocked)} => Unlocked blueprint location {group.id}");
+                            Plugin.Log.LogInfo($"{nameof(GameManager)}::{nameof(CheckForLocationsUnlocked)} => Unlocked blueprint location {group.id}");
                             Plugin.ArchipelagoClient.SendLocation(group.id);
                         }
 
