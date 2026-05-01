@@ -1,3 +1,9 @@
+# DO NOT USE FOR GAMES
+
+This AP is not ready to use in real games, there is no logic and no goal implemented.
+Also you cannot play with the version v0.0.1-poc with a version of the game higher than v1.526 (~ June 2025)
+
+
 # TPCA
 
 This is the client for the **people who wants to play The Planet Crafter Archipelago**, you can find the [ap world](https://github.com/Hawkrex/Archipelago-ThePlanetCrafter) here for the **Archipelago server host**.
