@@ -6,17 +6,22 @@ namespace TPCA.Patches
     [HarmonyPatch(typeof(SaveFilesSelector))]
     internal static class SaveFilesSelectorPatches
     {
+        /// <summary>
+        /// Executes after the method
+        /// Called when the save file is selected
+        /// Retrieve the Archipelago informations and connect to the server
+        /// </summary>
+        /// <param name="fileName">Save file name</param>
         [HarmonyPatch(nameof(SaveFilesSelector.SelectedSaveFile))]
         [HarmonyPostfix]
         public static void SelectedSaveFile_Postfix(string fileName)
         {
-            Plugin.Log.LogDebug($"{nameof(SaveFilesSelectorPatches)}::{nameof(SelectedSaveFile_Postfix)} => Selected save <{fileName}>");
+            Plugin.Log.LogDebug($"{nameof(SelectedSaveFile_Postfix)} => Selected save <{fileName}>");
 
             Plugin.ArchipelagoModeDeactivated = !JSONExportPatches.ArchipelagoInfosByNames.ContainsKey(fileName);
-            
+
             if (Plugin.ArchipelagoModeDeactivated)
             {
-                Plugin.Log.LogDebug($"{nameof(SaveFilesSelectorPatches)}::{nameof(SelectedSaveFile_Postfix)} => Archipelago mode deactivated");
                 return;
             }
 
@@ -28,7 +33,7 @@ namespace TPCA.Patches
 
             if (Plugin.ArchipelagoClient.Connect())
             {
-                Plugin.Log.LogInfo($"{nameof(SaveFilesSelectorPatches)}::{nameof(SelectedSaveFile_Postfix)} => Automatic connection on save loading successful");
+                Plugin.Log.LogInfo($"{nameof(SelectedSaveFile_Postfix)} => Automatic connection on save loading successful");
             }
 
             // TODO Check GUID

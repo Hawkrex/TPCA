@@ -18,7 +18,7 @@ namespace TPCA_Debug.Patches
                 return true;
             }
 
-            Plugin.Log.LogInfo($"GetUnlockableGroupsUnderUnit > unitType {unitType} / onlySpecificToCurrentPlanet {onlySpecificToCurrentPlanet}");
+            //Plugin.Log.LogInfo($"GetUnlockableGroupsUnderUnit > unitType {unitType} / onlySpecificToCurrentPlanet {onlySpecificToCurrentPlanet}");
 
             var allGroups = GroupsHandler.GetAllGroups();
 
@@ -31,9 +31,9 @@ namespace TPCA_Debug.Patches
                     stringBuilder.Append($"{Readable.GetGroupName(group)} + ");
                 }
 
-                Plugin.Log.LogInfo($"GetUnlockableGroupsUnderUnit > group {group.id} /  GetIsUnlocked {isUnlocked}");
+                //Plugin.Log.LogInfo($"GetUnlockableGroupsUnderUnit > group {group.id} /  GetIsUnlocked {isUnlocked}");
             }
-            Plugin.Log.LogInfo($"GetUnlockableGroupsUnderUnit > Location {stringBuilder.ToString()}");
+            //Plugin.Log.LogInfo($"GetUnlockableGroupsUnderUnit > Location {stringBuilder.ToString()}");
             Debug.Location = stringBuilder.ToString();
             return true;
         }

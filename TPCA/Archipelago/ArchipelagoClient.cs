@@ -178,7 +178,7 @@ namespace TPCA.Archipelago
             }
 
             long locationId = session.Locations.GetLocationIdFromName(GameName, locationName);
-            Plugin.Log.LogWarning($"Trying to send location {locationId}");
+            Plugin.Log.LogInfo($"Trying to send location {locationId}");
             _ = session.Locations.CompleteLocationChecksAsync(locationId);
         }
 
@@ -215,7 +215,7 @@ namespace TPCA.Archipelago
                         Flags = entry.Value.Flags,
                         PlayerName = playerName,
                         IsLocal = player == session.ConnectionInfo.Slot,
-                        IsTpcItem = entry.Value.ItemGame == GameName
+                        IsTpcItem = entry.Value.ItemDisplayName == "NoItem" ? false : entry.Value.ItemGame == GameName
                     };
                 }
                 return itemByLocations;

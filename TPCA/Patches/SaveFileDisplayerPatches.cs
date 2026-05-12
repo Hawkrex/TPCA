@@ -10,6 +10,14 @@ namespace TPCA.Patches
     {
         private static TextMeshProUGUI text;
 
+        /// <summary>
+        /// Executes before the method
+        /// Called when showing a save file in the SaveFileDisplayer
+        /// Shows the GUID of the archipelago player
+        /// </summary>
+        /// <param name="fileName">Save file name</param>
+        /// <param name="___gameModeText">Text component showing the game mode and the planet</param>
+        /// <returns>true to execute the original method after</returns>
         [HarmonyPatch(nameof(SaveFileDisplayer.SetData))]
         [HarmonyPrefix]
         public static bool SetData_Prefix(string fileName, TextMeshProUGUI ___gameModeText)
@@ -19,7 +27,7 @@ namespace TPCA.Patches
                 return true;
             }
 
-            SaveFileDisplayer_Start(___gameModeText);
+            CreateArchipelagoIdTextComponent(___gameModeText);
 
             var archipelagoInfos = JSONExportPatches.ArchipelagoInfosByNames[fileName];
             text.text = $"AP  {archipelagoInfos.Guid}";
@@ -30,7 +38,11 @@ namespace TPCA.Patches
             return true;
         }
 
-        private static void SaveFileDisplayer_Start(TextMeshProUGUI ___gameModeText)
+        /// <summary>
+        /// Create a new text component above the gameMode text component
+        /// </summary>
+        /// <param name="___gameModeText">Text component showing the game mode and the planet</param>
+        private static void CreateArchipelagoIdTextComponent(TextMeshProUGUI ___gameModeText)
         {
             var archipelagoId = new GameObject("ArchipelagoId");
             archipelagoId.transform.SetParent(___gameModeText.transform, false);

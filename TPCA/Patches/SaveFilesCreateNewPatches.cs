@@ -17,37 +17,13 @@ namespace TPCA.Patches
 
         private static SaveFilesCreateNew instance;
 
-        [HarmonyPatch(nameof(SaveFilesCreateNew.CreateNewFile))]
-        [HarmonyPrefix]
-        public static bool CreateNewFile_Prefix(SaveFilesCreateNew __instance, JsonableGameState ____jsonableGameSettings, string ____fileName)
-        {
-            // If we are not in Archipelago mode, just execute original code
-            if (Plugin.ArchipelagoModeDeactivated)
-            {
-                Plugin.Log.LogDebug($"{nameof(CreateNewFile_Prefix)} => Archipelago mode deactivated");
-                return true;
-            }
-
-            // If we are connected to the AP server, we generate a guid that we store on the AP server and in the game save (original code execution + JSONExportPatches.CreateNewSaveFile_Postfix)
-            if ((ArchipelagoSettingsGUI.State == ArchipelagoSettingsState.ConnectedButGuidExists || ArchipelagoSettingsGUI.State == ArchipelagoSettingsState.Connected) && Plugin.ArchipelagoClient.IsConnected)
-            {
-                if (Plugin.ArchipelagoClient.CreateAndStoreGuid())
-                {
-                    Plugin.ArchipelagoClient.Disconnect();
-                    return true;
-                }
-                else
-                {
-                    Plugin.Log.LogError("Trying to communicate with AP server but client is not connected");
-                }
-            }
-
-            // Else warn user he is not connected to AP server and do nothing else
-            ArchipelagoSettingsGUI.State = ArchipelagoSettingsState.NotConnected;
-            return false;
-        }
-
-        // Add an archipelago mode checkbutton that brings up the ArchipelagoSettingsGUI on the planet save creation menu
+        /// <summary>
+        /// Executes after the method
+        /// Called when the save creation menu is shown
+        /// Adds an archipelago mode checkbutton that brings up the ArchipelagoSettingsGUI on the save creation menu
+        /// </summary>
+        /// <param name="__instance">Instance of the save creation menu</param>
+        /// <param name="___settingsButton">Settings button component</param>
         [HarmonyPatch(nameof(SaveFilesCreateNew.Init))]
         [HarmonyPostfix]
         public static void Init_Postfix(SaveFilesCreateNew __instance, Button ___settingsButton)
@@ -78,6 +54,9 @@ namespace TPCA.Patches
             //CreateArchipelagoMenuFromScratch(___settingsButton.transform.GetParent().gameObject);
         }
 
+        /// <summary>
+        /// Activate or desactivate the archipelago mode (disable all patches to play the vanilla game)
+        /// </summary>
         private static void OnArchipelagoModeChecked()
         {
             Plugin.Log.LogInfo($"Archipelago mode checkbox state <{archipelagoModeCheckbox.GetStatus()}>");
@@ -136,5 +115,43 @@ namespace TPCA.Patches
 
             archipelagoContainer.SetActive(true);
         }*/
+
+        /// <summary>
+        /// Executes before or override the method
+        /// Called when the player clicks on Create in the save creation menu
+        /// If Archipelago mode is activated, try to connect to the server. If it fails, warns the user and prevent from creating the save
+        /// </summary>
+        /// <param name="__instance"></param>
+        /// <param name="____jsonableGameSettings"></param>
+        /// <param name="____fileName"></param>
+        /// <returns>true if original method is executed after</returns>
+        [HarmonyPatch(nameof(SaveFilesCreateNew.CreateNewFile))]
+        [HarmonyPrefix]
+        public static bool CreateNewFile_Prefix(SaveFilesCreateNew __instance, JsonableGameState ____jsonableGameSettings, string ____fileName)
+        {
+            // If we are not in Archipelago mode, just execute original code
+            if (Plugin.ArchipelagoModeDeactivated)
+            {
+                return true;
+            }
+
+            // If we are connected to the AP server, we generate a guid that we store on the AP server and in the game save (original code execution + JSONExportPatches.CreateNewSaveFile_Postfix)
+            if ((ArchipelagoSettingsGUI.State == ArchipelagoSettingsState.ConnectedButGuidExists || ArchipelagoSettingsGUI.State == ArchipelagoSettingsState.Connected) && Plugin.ArchipelagoClient.IsConnected)
+            {
+                if (Plugin.ArchipelagoClient.CreateAndStoreGuid())
+                {
+                    Plugin.ArchipelagoClient.Disconnect();
+                    return true;
+                }
+                else
+                {
+                    Plugin.Log.LogError("Trying to communicate with AP server but client is not connected");
+                }
+            }
+
+            // Else warn user he is not connected to AP server and do nothing else
+            ArchipelagoSettingsGUI.State = ArchipelagoSettingsState.NotConnected;
+            return false;
+        }
     }
 }

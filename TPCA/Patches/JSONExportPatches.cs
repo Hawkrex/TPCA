@@ -14,58 +14,72 @@ namespace TPCA.Patches
     {
         public static Dictionary<string, ArchipelagoSaveInfos> ArchipelagoInfosByNames = new();
 
-        [HarmonyPatch(nameof(JSONExport.SaveToJson))]
-        [HarmonyPostfix]
-        public static void SaveToJson_Postfix(string _saveFileName)
-        {
-            if (Plugin.ArchipelagoModeDeactivated)
-            {
-                Plugin.Log.LogDebug($"{nameof(SaveToJson_Postfix)} => Archipelago mode deactivated");
-                return;
-            }
-
-            SaveArchipelagoSaveInfos(_saveFileName);
-        }
-
+        /// <summary>
+        /// Executes before the method
+        /// Called when creating a new game
+        /// Modify the game settings to skip the intro landing
+        /// </summary>
+        /// <param name="gameSettings">Game settings</param>
         [HarmonyPatch(nameof(JSONExport.CreateNewSaveFile))]
         [HarmonyPrefix]
         public static void CreateNewSaveFile_Prefix(JsonableGameState gameSettings)
         {
-            Plugin.Log.LogDebug($"{nameof(CreateNewSaveFile_Prefix)} => OK");
             if (Plugin.ArchipelagoModeDeactivated)
             {
-                Plugin.Log.LogDebug($"{nameof(CreateNewSaveFile_Prefix)} => Archipelago mode deactivated");
                 return;
             }
-
-            Plugin.Log.LogDebug($"{nameof(CreateNewSaveFile_Prefix)} => Archipelago mode activated");
 
             gameSettings.hasPlayedIntro = true;
         }
 
+        /// <summary>
+        /// Executes after the method
+        /// Called when creating a new game
+        /// Save Archipelago informations to the end of the game save file
+        /// </summary>
+        /// <param name="saveFileName">Save filename</param>
         [HarmonyPatch(nameof(JSONExport.CreateNewSaveFile))]
         [HarmonyPostfix]
         public static void CreateNewSaveFile_Postfix(string saveFileName)
         {
             if (Plugin.ArchipelagoModeDeactivated)
             {
-                Plugin.Log.LogDebug($"{nameof(CreateNewSaveFile_Postfix)} => Archipelago mode deactivated");
                 return;
             }
-
-            Plugin.Log.LogDebug($"{nameof(CreateNewSaveFile_Prefix)} => Archipelago mode activated");
 
             SaveArchipelagoSaveInfos(saveFileName);
         }
 
-        private static void SaveArchipelagoSaveInfos(string _saveFileName)
+        /// <summary>
+        /// Executes after the method
+        /// Called when game is saved
+        /// Save Archipelago informations to the end of the game save file
+        /// </summary>
+        /// <param name="_saveFileName">Save filename</param>
+        [HarmonyPatch(nameof(JSONExport.SaveToJson))]
+        [HarmonyPostfix]
+        public static void SaveToJson_Postfix(string _saveFileName)
         {
-            Plugin.Log.LogDebug($"{nameof(SaveArchipelagoSaveInfos)} => Save file <{_saveFileName}>");
+            if (Plugin.ArchipelagoModeDeactivated)
+            {
+                return;
+            }
+
+            SaveArchipelagoSaveInfos(_saveFileName);
+        }
+
+        /// <summary>
+        /// Saves the Archipelago informations at the end of the save file
+        /// </summary>
+        /// <param name="saveFileName">Save filename</param>
+        private static void SaveArchipelagoSaveInfos(string saveFileName)
+        {
+            Plugin.Log.LogDebug($"{nameof(SaveArchipelagoSaveInfos)} => Save file <{saveFileName}>");
 
             string infosJson = JsonConvert.SerializeObject(Plugin.State.SaveInfos);
             Plugin.Log.LogDebug($"{nameof(SaveArchipelagoSaveInfos)} => Infos to save <{infosJson}>");
 
-            string filePath = GetWorldStateSaveFilePath(_saveFileName);
+            string filePath = GetFullSaveFilePath(saveFileName);
 
             try
             {
@@ -74,21 +88,32 @@ namespace TPCA.Patches
             }
             catch (Exception ex)
             {
-                Plugin.Log.LogError($"{nameof(SaveArchipelagoSaveInfos)} => Error saving archipelago infos into save <{_saveFileName}> : {ex}");
+                Plugin.Log.LogError($"{nameof(SaveArchipelagoSaveInfos)} => Error saving archipelago infos into save <{saveFileName}> : {ex}");
             }
         }
 
+        /// <summary>
+        /// Executes after the method
+        /// Called when save is loaded
+        /// Load Archipelago informations at the end of the game save file
+        /// </summary>
+        /// <param name="_saveFileName">Save filename</param>
         [HarmonyPatch(nameof(JSONExport.LoadFromJson))]
         [HarmonyPostfix]
         public static void LoadFromJson_Postfix(string _saveFileName)
         {
+            if (Plugin.ArchipelagoModeDeactivated)
+            {
+                return;
+            }
+
             if (ArchipelagoInfosByNames.ContainsKey(_saveFileName))
             {
                 Plugin.Log.LogDebug($"{nameof(LoadFromJson_Postfix)} => Infos already loaded for save <{_saveFileName}>");
                 return;
             }
 
-            string filePath = GetWorldStateSaveFilePath(_saveFileName);
+            string filePath = GetFullSaveFilePath(_saveFileName);
             string lastLine = File.ReadLines(filePath).Last();
 
             if (lastLine != "@") // Normal game save end with a line containing only a "@"
@@ -98,9 +123,14 @@ namespace TPCA.Patches
             }
         }
 
-        private static string GetWorldStateSaveFilePath(string _saveFileName)
+        /// <summary>
+        /// Get full save file path
+        /// </summary>
+        /// <param name="saveFileName">Save filename</param>
+        /// <returns>The full save file path</returns>
+        private static string GetFullSaveFilePath(string saveFileName)
         {
-            return string.Format("{0}/{1}.json", Application.persistentDataPath, _saveFileName);
+            return string.Format("{0}/{1}.json", Application.persistentDataPath, saveFileName);
         }
     }
 }
