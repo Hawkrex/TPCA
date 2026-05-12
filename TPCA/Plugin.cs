@@ -24,6 +24,7 @@ namespace TPCA
         {
             Log = base.Logger;
 
+            Log.LogInfo($"Game version: {Application.version}");
             Log.LogInfo($"PluginName: {MyPluginInfo.PLUGIN_NAME}, VersionString: {MyPluginInfo.PLUGIN_VERSION} is loading...");
 
             harmony.PatchAll();

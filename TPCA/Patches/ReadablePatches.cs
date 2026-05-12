@@ -50,10 +50,10 @@ namespace TPCA.Patches
         /// <summary>
         /// Executes before or override the method
         /// Called when the game needs to show a group description (translated) to the player
-        /// TODO
+        /// Retrieve the description of the group (Empty string if not a Planet Crafter object)
         /// </summary>
         /// <param name="_group">Group to get description readable</param>
-        /// <param name="__result">TODO</param>
+        /// <param name="__result">The description to show</param>
         /// <returns>true if original method is executed after</returns>
         [HarmonyPatch(nameof(Readable.GetGroupDescription))]
         [HarmonyPrefix]

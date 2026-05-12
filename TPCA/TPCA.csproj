@@ -52,8 +52,9 @@
   <Target Name="CopyDLLs" AfterTargets="PostBuildEvent">
 	<MakeDir Directories="bin/$(AssemblyName)" />
 	<Copy SourceFiles="Resources\ArchipelagoItem.png" DestinationFolder="bin/$(AssemblyName)" />
+	  <Copy SourceFiles="Resources\ErrorTexture.png" DestinationFolder="bin/$(AssemblyName)" />
 	<Copy SourceFiles="$(OutputPath)/$(AssemblyName).dll;$(OutputPath)/Archipelago.MultiClient.Net.dll;$(OutputPath)/Newtonsoft.Json.dll;" DestinationFolder="bin/$(AssemblyName)" />
-	<Copy SourceFiles="bin/$(AssemblyName)/$(AssemblyName).dll;bin/$(AssemblyName)/Archipelago.MultiClient.Net.dll;bin/$(AssemblyName)/Newtonsoft.Json.dll;bin/$(AssemblyName)/ArchipelagoItem.png;" DestinationFolder="$(Destination)" />
+	<Copy SourceFiles="bin/$(AssemblyName)/$(AssemblyName).dll;bin/$(AssemblyName)/Archipelago.MultiClient.Net.dll;bin/$(AssemblyName)/Newtonsoft.Json.dll;bin/$(AssemblyName)/ArchipelagoItem.png;bin/$(AssemblyName)/ErrorTexture.png;" DestinationFolder="$(Destination)" />
     <ZipDirectory SourceDirectory="bin/$(AssemblyName)" DestinationFile="$(OutputPath)\..\..\..\..\$(AssemblyName).zip" Overwrite="true" />
   </Target>
 </Project>

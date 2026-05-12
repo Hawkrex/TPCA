@@ -14,6 +14,9 @@ namespace TPCA.Patches
     [HarmonyPatch(typeof(StaticDataHandler))]
     internal class StaticDataHandlerPatches
     {
+        private static Texture2D archipelagoTexture;
+        private static Texture2D errorTexture;
+
         /// <summary>
         /// Executes before or override the method
         /// Called when the game save loads
@@ -37,6 +40,10 @@ namespace TPCA.Patches
             }
 
             var groupsData = __instance.staticAvailableObjects.groupsData;
+            archipelagoTexture = LoadTexture("ArchipelagoItem.png");
+            errorTexture = LoadTexture("ErrorTexture.png");
+
+
 
             GameManager.AllGroups = CreateGroups(groupsData); // First half of the original method (untouched)
 
@@ -209,17 +216,12 @@ namespace TPCA.Patches
             else
             {
                 //Plugin.Log.LogDebug($"Loading AP texture");
-                texture = LoadTexture("ArchipelagoItem.png");
-            }
-
-            if (texture == null)
-            {
-                texture = LoadTexture("ArchipelagoItem.png"); // TODO : Error image
+                texture = archipelagoTexture;
             }
 
             //Plugin.Log.LogDebug($"Icon modified");
 
-            return Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), Vector2.zero);
+            return Sprite.Create(texture ?? errorTexture, new Rect(0f, 0f, texture.width, texture.height), Vector2.zero);
         }
 
         /// <summary>
@@ -350,7 +352,7 @@ namespace TPCA.Patches
         /// </summary>
         /// <param name="texturePath">Path of the texture from the plugin folder</param>
         /// <returns>The specified texture loaded</returns>
-        public static Texture2D LoadTexture(string texturePath) // TODO : Optimize to call it once
+        public static Texture2D LoadTexture(string texturePath)
         {
             string path = Path.Combine(Paths.PluginPath, "TPCA", texturePath);
 
