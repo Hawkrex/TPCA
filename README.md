@@ -1,7 +1,10 @@
 # DO NOT USE FOR GAMES
 
 This AP is not ready to use in real games, there is no logic and no goal implemented.
-Also you cannot play with the version v0.0.1-poc with a version of the game higher than v1.526 (~ June 2025)
+The client appears to not be stable yet (black screen on save launch), so please, backup your saves before testing (Save folder is in your `AppData\LocalLow\MijuGames\Planet Crafter`)
+You cannot play with the version v0.0.1-poc with a version of the game higher than v1.526 (~ June 2025)
+
+The version v0.0.2-poc have been tested with the Archipelago `v0.6.5`, APWorld `v0.0.1-poc`, BepInEx `v5.4.23.5` and The Planet Crafter `v2.008`
 
 
 # TPCA
@@ -21,6 +24,7 @@ At this step, you should have the `BepinEx` folder in your game folder and a `pl
 Now you should have the following path `The Planet Crafter\BepInEx\plugins\TPCA` and inside the following files (latest release) :
 - Archipelago.MultiClient.Net.dll
 - ArchipelagoItem.png
+- ErrorTexture.png
 - Newtonsoft.Json.dll
 - TPCA.dll
 
@@ -39,13 +43,15 @@ The `First Connection` button can produce the following messages :
 - `Error connecting to AP server!` in red: there's been a problem connecting to the AP server, double check the informations you filled in the Archipelago Settings menu and make sure the AP server is launched.
 - `Please connect to AP server first!` in yellow: you clicked on Create before connecting to the AP server with the First Connection button.
 
-## Debug
+## Reporting an issue
 
-You can help by activating the debug logs in BepinEx :
+Before submitting an issue on this repo, you should activate the debug logs in BepinEx :
 - Go to the `BepinEx/config` folder, edit the `BepInEx.cfg` config file by finding the `[Logging.Disk]` tag, underneath you should find the parameter `LogLevels` : make it `LogLevels = All` to enable all levels of logs
 - Then play and reproduce the bug you found if you can (or prepare this config before you play the first time)
 - During your play, the `LogOutput.log` file is generated in real time in the `BepinEx` folder
-- Create an issue with a nice title, a description of what happened in the game and a copy of the `LogOutput.log` file
+- Create an issue with a nice title, a description of what happened in the game, a copy of the `LogOutput.log` file and a copy of your save (before the issue happening / Save folder is in your `AppData\LocalLow\MijuGames\Planet Crafter`)
+
+Issues with the most informations (description + debug log + save) will have the most chances to be resolved
 
 ## Technical functioning of the AP save (Boring programmer stuff)
 

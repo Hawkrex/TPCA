@@ -6,6 +6,8 @@ namespace TPCA.Patches
     [HarmonyPatch(typeof(UiWindowPause))]
     internal static class UiWindowPausePatches
     {
+        public static bool ShowArchipelagoSettingsGUI;
+
         /// <summary>
         /// Executes before the method
         /// Called when the game is quitted
@@ -21,7 +23,44 @@ namespace TPCA.Patches
                 Plugin.ArchipelagoClient.Disconnect();
             }
 
+            ShowArchipelagoSettingsGUI = false;
             return true;
+        }
+
+        /// <summary>
+        /// Executes after the method
+        /// Called when the pause menu is opened
+        /// Show the ArchipelagoSettingsGUI
+        /// </summary>
+        [HarmonyPatch(nameof(UiWindowPause.OnOpen))]
+        [HarmonyPostfix]
+        public static void OnOpen_Postfix()
+        {
+            if (Plugin.ArchipelagoModeDeactivated)
+            {
+                return;
+            }
+
+            ShowArchipelagoSettingsGUI = true;
+            Plugin.Log.LogFatal($"ShowArchipelagoSettingsGUI {ShowArchipelagoSettingsGUI}");
+        }
+
+        /// <summary>
+        /// Executes after the method
+        /// Called when the pause menu is closed
+        /// Hide the ArchipelagoSettingsGUI
+        /// </summary>
+        [HarmonyPatch(nameof(UiWindowPause.OnClose))]
+        [HarmonyPostfix]
+        public static void OnClose_Postfix()
+        {
+            if (Plugin.ArchipelagoModeDeactivated)
+            {
+                return;
+            }
+
+            ShowArchipelagoSettingsGUI = false;
+            Plugin.Log.LogFatal($"ShowArchipelagoSettingsGUI {ShowArchipelagoSettingsGUI}");
         }
     }
 }

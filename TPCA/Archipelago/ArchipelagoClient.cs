@@ -6,10 +6,8 @@ using Archipelago.MultiClient.Net.MessageLog.Messages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Threading.Tasks;
 using TPCA.Datas;
-using UnityEngine;
 
 namespace TPCA.Archipelago
 {
@@ -151,7 +149,7 @@ namespace TPCA.Archipelago
 
             var player = item.Player;
             var playerName = player.Alias ?? player.Name ?? $"Player #{player.Slot}";
-            
+
             Plugin.Log.LogInfo($"{nameof(SessionItemReceived)} => Received item #{index}: {item.ItemId} - {itemName} from {playerName}");
             GameManager.IncomingItems.Enqueue(new()
             {
