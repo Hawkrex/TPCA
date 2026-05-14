@@ -1,12 +1,3 @@
-# DO NOT USE FOR GAMES
-
-This AP is not ready to use in real games, there is no logic and no goal implemented.
-The client appears to not be stable yet (black screen on save launch), so please, backup your saves before testing (Save folder is in your `AppData\LocalLow\MijuGames\Planet Crafter`)
-You cannot play with the version v0.0.1-poc with a version of the game higher than v1.526 (~ June 2025)
-
-The version v0.0.2-poc have been tested with the Archipelago `v0.6.5`, APWorld `v0.0.1-poc`, BepInEx `v5.4.23.5` and The Planet Crafter `v2.008`
-
-
 # TPCA
 
 This is the client for the **people who wants to play The Planet Crafter Archipelago**, you can find the [ap world](https://github.com/Hawkrex/Archipelago-ThePlanetCrafter) here for the **Archipelago server host**.
