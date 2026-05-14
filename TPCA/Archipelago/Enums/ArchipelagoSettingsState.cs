@@ -1,8 +1,7 @@
-﻿namespace TPCA
+﻿namespace TPCA.Archipelago.Enums
 {
-    internal enum ArchipelagoSettingsState
+    internal enum ArchipelagoState
     {
-        None,
         NotConnected,
         Connecting,
         ConnectionError,

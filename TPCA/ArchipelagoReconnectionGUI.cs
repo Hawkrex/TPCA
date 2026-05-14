@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace TPCA
 {
-    internal static class ArchipelagoSettingsGUI
+    internal static class ArchipelagoReconnectionGUI
     {
         private const string hostNameControlName = "HostName";
         private const string playerNameControlName = "PlayerName";
@@ -11,16 +11,16 @@ namespace TPCA
 
         internal static void OnGUI()
         {
-            float margin = 30;
+            float margin = 10;
 
-            int boxWidth = 500;
-            int boxHeight = 400;
+            int boxWidth = 400;
+            int boxHeight = 250;
 
-            int titleFontSize = 40;
+            int titleFontSize = 26;
 
-            int labelFontSize = 24;
-            float labelWidth = 180;
-            float labelHeight = 30;
+            int labelFontSize = 18;
+            float labelWidth = 120;
+            float labelHeight = 24;
 
             float textFieldWidth = 260;
             float textFieldHeight = labelHeight + 4;
@@ -49,11 +49,11 @@ namespace TPCA
                 focusedControlName is hostNameControlName or playerNameControlName or passwordControlName;
 
             // Frame
-            GUI.BeginGroup(new(800, 550, boxWidth, boxHeight));
-            GUI.Box(new(0, 0, boxWidth, boxHeight), "Archipelago Settings", titleStyle);
+            GUI.BeginGroup(new(1920 - (boxWidth + 60), (1080 - boxHeight) / 2, boxWidth, boxHeight));
+            GUI.Box(new(0, 0, boxWidth, boxHeight), "Archipelago Connection", titleStyle);
 
             // Host name
-            float hostY = titleFontSize + 60;
+            float hostY = titleStyle.fontSize + 30;
             GUI.Label(new(margin, hostY, labelWidth, labelHeight), "Host", labelStyle);
             GUI.SetNextControlName(hostNameControlName);
             Plugin.State.Host = GUI.TextField(new(margin + labelWidth, hostY, textFieldWidth, textFieldHeight), Plugin.State.Host, textFieldStyle);
@@ -71,13 +71,13 @@ namespace TPCA
             Plugin.State.Password = GUI.PasswordField(new(margin + labelWidth, passwordY, textFieldWidth, textFieldHeight), Plugin.State.Password, "*"[0], textFieldStyle);
 
             float connectionStateX = (boxWidth - 450) / 2;
-            float connectionStateY = passwordY + textFieldHeight + margin - 10;
+            float connectionStateY = passwordY + margin + 10;
             string connectionState = string.Empty;
 
             switch (Plugin.ArchipelagoClient.ArchipelagoState)
             {
                 case ArchipelagoState.NotConnected:
-                    connectionState = "Please connect to AP server first!";
+                    connectionState = "Not connected to AP server.";
                     labelStyle.normal.textColor = Color.yellow;
                     break;
 
@@ -92,7 +92,7 @@ namespace TPCA
                     break;
 
                 case ArchipelagoState.ConnectedButGuidExists:
-                    connectionState = "Connected to AP server but a save has already been associated to this AP server and player!\r\nCreate a new save at your own risk!";
+                    connectionState = "Connected to AP server but a save has already been associated to this AP server and player!";
                     labelStyle.normal.textColor = Color.yellow;
                     break;
 
@@ -107,14 +107,14 @@ namespace TPCA
             GUI.Label(new(connectionStateX, connectionStateY, 450, labelHeight * 2), connectionState, labelStyle);
 
             float connectionX = (boxWidth - 200) / 2;
-            float connectionY = connectionStateY + labelHeight * 2 + 10;
+            float connectionY = connectionStateY + labelHeight * 2;
             GUI.enabled = !Plugin.ArchipelagoClient.IsConnected;
-            bool isButtonClicked = GUI.Button(new(connectionX, connectionY, 200, 40), "First Connection", buttonStyle);
+            bool isButtonClicked = GUI.Button(new(connectionX, connectionY, 200, 40), "Connect", buttonStyle);
             GUI.enabled = true;
 
             if (isEnterKeyPressed || isButtonClicked)
             {
-                Plugin.ArchipelagoClient.TryConnect();
+                Plugin.ArchipelagoClient.Connect();
             }
 
             GUI.EndGroup();

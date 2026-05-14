@@ -52,15 +52,14 @@ namespace TPCA
 
         private void OnGUI()
         {
-            // Works only when placed before the other condition
-            if (UiWindowPausePatches.ShowArchipelagoSettingsGUI)
-            {
-                ArchipelagoSettingsGUI.OnPauseGUI();
-            }
-
             if (SaveFilesCreateNewPatches.ShowArchipelagoSettingsGUI)
             {
                 ArchipelagoSettingsGUI.OnGUI();
+            }
+
+            if (UiWindowPausePatches.ShowArchipelagoSettingsGUI)
+            {
+                ArchipelagoReconnectionGUI.OnGUI();
             }
         }
     }

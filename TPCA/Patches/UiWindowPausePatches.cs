@@ -42,7 +42,6 @@ namespace TPCA.Patches
             }
 
             ShowArchipelagoSettingsGUI = true;
-            Plugin.Log.LogFatal($"ShowArchipelagoSettingsGUI {ShowArchipelagoSettingsGUI}");
         }
 
         /// <summary>
@@ -60,7 +59,6 @@ namespace TPCA.Patches
             }
 
             ShowArchipelagoSettingsGUI = false;
-            Plugin.Log.LogFatal($"ShowArchipelagoSettingsGUI {ShowArchipelagoSettingsGUI}");
         }
     }
 }

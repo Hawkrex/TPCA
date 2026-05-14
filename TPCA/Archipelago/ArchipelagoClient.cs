@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TPCA.Archipelago.Enums;
 using TPCA.Datas;
 
 namespace TPCA.Archipelago
@@ -16,7 +17,8 @@ namespace TPCA.Archipelago
         private const string MinArchipelagoVersion = "0.6.2";
         private const string GameName = "The Planet Crafter";
 
-        public bool IsConnected => session?.Socket.Connected ?? false;
+        public ArchipelagoState ArchipelagoState { get; private set; }
+        public bool IsConnected => ArchipelagoState == ArchipelagoState.Connected || ArchipelagoState == ArchipelagoState.ConnectedButGuidExists;
 
         private ArchipelagoSession session;
         private DeathLinkHandler deathLinkHandler;
@@ -30,13 +32,17 @@ namespace TPCA.Archipelago
                 return new LoginFailure("Already trying to connect or already connected");
             }
 
+            ArchipelagoState = ArchipelagoState.Connecting; // Not even sure this will work withy an async version of TryConnectAndLogin
+
             if (string.IsNullOrWhiteSpace(Plugin.State.Host))
             {
+                ArchipelagoState = ArchipelagoState.ConnectionError;
                 return new LoginFailure("Host Name is null or empty");
             }
 
             if (string.IsNullOrWhiteSpace(Plugin.State.PlayerName))
             {
+                ArchipelagoState = ArchipelagoState.ConnectionError;
                 return new LoginFailure("Player Name is null or empty");
             }
 
@@ -47,6 +53,7 @@ namespace TPCA.Archipelago
             }
             catch (Exception ex)
             {
+                ArchipelagoState = ArchipelagoState.ConnectionError;
                 return new LoginFailure($"Cannot create archipelago session: {ex}");
             }
 
@@ -66,10 +73,20 @@ namespace TPCA.Archipelago
             {
                 isAttemptingConnection = false;
                 session = null;
+                ArchipelagoState = ArchipelagoState.ConnectionError;
                 return new LoginFailure($"Cannot connect to AP server: {string.Join("\n", loginFailure.Errors)}");
             }
 
             Plugin.Log.LogInfo($"Successfully connected to {Plugin.State.Host} as {Plugin.State.PlayerName}");
+
+            if (DoesGuidExist())
+            {
+                ArchipelagoState = ArchipelagoState.ConnectedButGuidExists;
+            }
+            else
+            {
+                ArchipelagoState = ArchipelagoState.Connected;
+            }
 
             return loginResult as LoginSuccessful;
         }
@@ -101,6 +118,7 @@ namespace TPCA.Archipelago
         private void SetupSession()
         {
             session.Socket.ErrorReceived += SessionErrorReceived;
+            session.Socket.SocketOpened += SessionSocketOpened;
             session.Socket.SocketClosed += SessionSocketClosed;
             session.Items.ItemReceived += SessionItemReceived;
             session.MessageLog.OnMessageReceived += SessionOnMessageReceived;
@@ -127,12 +145,22 @@ namespace TPCA.Archipelago
                 Plugin.Log.LogError(ex.ToString());
             }
 
+            ArchipelagoState = ArchipelagoState.ConnectionError;
+
             Disconnect();
+        }
+
+        private void SessionSocketOpened()
+        {
+            ArchipelagoState = ArchipelagoState.Connected;
         }
 
         private void SessionSocketClosed(string reason)
         {
             Plugin.Log.LogError($"Connection to Archipelago lost: {reason}");
+
+            ArchipelagoState = ArchipelagoState.NotConnected;
+
             Disconnect();
         }
 

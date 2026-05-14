@@ -9,8 +9,8 @@ namespace TPCA.Patches
     [HarmonyPatch(typeof(SaveFilesCreateNew))]
     internal class SaveFilesCreateNewPatches
     {
-        public static bool ShowArchipelagoSettingsGUI => archipelagoModeCheckbox.GetStatus() && instance.isActiveAndEnabled;
-
+        //public static bool ShowArchipelagoSettingsGUI => archipelagoModeCheckbox.GetStatus() && instance.isActiveAndEnabled;
+        public static bool ShowArchipelagoSettingsGUI;
         private static bool isAlreadyInit;
 
         private static UiButtonBool archipelagoModeCheckbox;
@@ -28,7 +28,7 @@ namespace TPCA.Patches
         [HarmonyPostfix]
         public static void Init_Postfix(SaveFilesCreateNew __instance, Button ___settingsButton)
         {
-            ArchipelagoSettingsGUI.ResetGUI();
+            ShowArchipelagoSettingsGUI = archipelagoModeCheckbox?.GetStatus() ?? true;
 
             if (!isAlreadyInit) // Init can be triggered multiple times but we don't want to add an infinite of checkboxes
             {
@@ -61,6 +61,8 @@ namespace TPCA.Patches
         {
             Plugin.Log.LogInfo($"Archipelago mode checkbox state <{archipelagoModeCheckbox.GetStatus()}>");
             Plugin.ArchipelagoModeDeactivated = !archipelagoModeCheckbox.GetStatus();
+
+            ShowArchipelagoSettingsGUI = archipelagoModeCheckbox.GetStatus();
         }
 
         /*private static void CreateArchipelagoMenuFromScratch(GameObject newFileContainer)
@@ -85,7 +87,7 @@ namespace TPCA.Patches
             text.text = "Archipelago Settings";
         }
 
-        private static void CreteMenuFromExisting(GameObject newFileContainer)
+        private static void CreateMenuFromExisting(GameObject newFileContainer)
         {
             // Copy UI frame
             var archipelagoContainer = UnityEngine.Object.Instantiate<GameObject>(newFileContainer, newFileContainer.transform);
@@ -136,7 +138,7 @@ namespace TPCA.Patches
             }
 
             // If we are connected to the AP server, we generate a guid that we store on the AP server and in the game save (original code execution + JSONExportPatches.CreateNewSaveFile_Postfix)
-            if ((ArchipelagoSettingsGUI.State == ArchipelagoSettingsState.ConnectedButGuidExists || ArchipelagoSettingsGUI.State == ArchipelagoSettingsState.Connected) && Plugin.ArchipelagoClient.IsConnected)
+            if (Plugin.ArchipelagoClient.IsConnected)
             {
                 if (Plugin.ArchipelagoClient.CreateAndStoreGuid())
                 {
@@ -149,8 +151,6 @@ namespace TPCA.Patches
                 }
             }
 
-            // Else warn user he is not connected to AP server and do nothing else
-            ArchipelagoSettingsGUI.State = ArchipelagoSettingsState.NotConnected;
             return false;
         }
     }

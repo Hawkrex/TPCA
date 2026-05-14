@@ -38,5 +38,17 @@ namespace TPCA.Patches
 
             // TODO Check GUID
         }
+
+        /// <summary>
+        /// Executes before the method
+        /// Called when the Create New File menu is closed
+        /// Hide the AP settings GUI
+        /// </summary>
+        [HarmonyPatch(nameof(SaveFilesSelector.AbortCreateNewFile))]
+        [HarmonyPrefix]
+        public static void AbortCreateNewFile_Prefix()
+        {
+            SaveFilesCreateNewPatches.ShowArchipelagoSettingsGUI = false;
+        }
     }
 }
