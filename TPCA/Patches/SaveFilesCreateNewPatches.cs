@@ -139,6 +139,11 @@ namespace TPCA.Patches
             // If we are connected to the AP server, we fetch AP datas (SeedName and Locations)
             if (Plugin.ArchipelagoClient.IsConnected)
             {
+                if (DoesSaveAlreadyExistsWithGuid())
+                {
+                    return false;
+                }
+
                 if (Plugin.ArchipelagoClient.FetchGameDatas())
                 {
                     Plugin.ArchipelagoClient.Disconnect();
@@ -149,6 +154,22 @@ namespace TPCA.Patches
                 else
                 {
                     Plugin.Log.LogError("Couldn't fetch necessary datas to create the save file!");
+                }
+            }
+
+            return false;
+        }
+
+        private static bool DoesSaveAlreadyExistsWithGuid()
+        {
+            foreach (var datas in JSONExportPatches.ArchipelagoDatasBySaveNames)
+            {
+                if (datas.Value.Guid == Plugin.ArchipelagoClient.GetServerGuid())
+                {
+                    Plugin.Log.LogError($"The save <{datas.Key}> already exists with the same GUID <{datas.Value.Guid}> as the server one!");
+
+                    Plugin.ArchipelagoClient.NotifyGuidAlreadyExists();
+                    return true;
                 }
             }
 

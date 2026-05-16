@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using Archipelago.MultiClient.Net;
+using HarmonyLib;
 using SpaceCraft;
 
 namespace TPCA.Patches
@@ -18,25 +19,30 @@ namespace TPCA.Patches
         {
             Plugin.Log.LogDebug($"{nameof(SelectedSaveFile_Postfix)} => Selected save <{fileName}>");
 
-            Plugin.ArchipelagoModeDeactivated = !JSONExportPatches.ArchipelagoInfosByNames.ContainsKey(fileName);
+            Plugin.ArchipelagoModeDeactivated = !JSONExportPatches.ArchipelagoDatasBySaveNames.ContainsKey(fileName);
 
             if (Plugin.ArchipelagoModeDeactivated)
             {
                 return;
             }
 
-            Plugin.State.SaveDatas = JSONExportPatches.ArchipelagoInfosByNames[fileName];
+            Plugin.State.SaveDatas = JSONExportPatches.ArchipelagoDatasBySaveNames[fileName];
 
             Plugin.State.Host = Plugin.State.SaveDatas.Host;
             Plugin.State.PlayerName = Plugin.State.SaveDatas.PlayerName;
             Plugin.State.Password = Plugin.State.SaveDatas.Password;
 
-            if (Plugin.ArchipelagoClient.Connect())
+            var loginResult = Plugin.ArchipelagoClient.TryConnect();
+            if (loginResult is LoginSuccessful loginSuccessful)
             {
+                if(Plugin.State.SaveDatas.Guid == Plugin.ArchipelagoClient.GetServerGuid())
+                {
+                    Plugin.Log.LogWarning($"{nameof(SelectedSaveFile_Postfix)} => Loading a save where the GUID doesn't match with the server automatically connected to, please check the informations of the server you are connected to!");
+                }
+
+                Plugin.ArchipelagoClient.OnConnect(loginSuccessful);
                 Plugin.Log.LogInfo($"{nameof(SelectedSaveFile_Postfix)} => Automatic connection on save loading successful");
             }
-
-            // TODO Check GUID
         }
 
         /// <summary>

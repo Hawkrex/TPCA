@@ -12,7 +12,7 @@ namespace TPCA.Patches
     [HarmonyPatch(typeof(JSONExport))]
     internal static class JSONExportPatches
     {
-        public static Dictionary<string, ArchipelagoSaveDatas> ArchipelagoInfosByNames = new();
+        public static Dictionary<string, ArchipelagoSaveDatas> ArchipelagoDatasBySaveNames = new();
 
         /// <summary>
         /// Executes before the method
@@ -115,7 +115,7 @@ namespace TPCA.Patches
                 return;
             }
 
-            if (ArchipelagoInfosByNames.ContainsKey(_saveFileName))
+            if (ArchipelagoDatasBySaveNames.ContainsKey(_saveFileName))
             {
                 Plugin.Log.LogDebug($"{nameof(LoadFromJson_Postfix)} => Infos already loaded for save <{_saveFileName}>");
                 return;
@@ -127,7 +127,7 @@ namespace TPCA.Patches
             if (lastLine != "@") // Normal game save end with a line containing only a "@"
             {
                 var infos = JsonConvert.DeserializeObject<ArchipelagoSaveDatas>(lastLine);
-                ArchipelagoInfosByNames[_saveFileName] = infos;
+                ArchipelagoDatasBySaveNames[_saveFileName] = infos;
             }
         }
 
@@ -139,6 +139,24 @@ namespace TPCA.Patches
         private static string GetFullSaveFilePath(string saveFileName)
         {
             return string.Format("{0}/{1}.json", Application.persistentDataPath, saveFileName);
+        }
+
+        /// <summary>
+        /// Executes after the method
+        /// Called when save is deleted
+        /// Delete Archipelago informations internaly
+        /// </summary>
+        /// <param name="_saveFileName">Save filename</param>
+        [HarmonyPatch(nameof(JSONExport.DeleteSaveFile))]
+        [HarmonyPostfix]
+        public static void DeleteSaveFile_Postfix(string _saveFileName)
+        {
+            if (Plugin.ArchipelagoModeDeactivated)
+            {
+                return;
+            }
+
+            ArchipelagoDatasBySaveNames.Remove(_saveFileName);
         }
     }
 }

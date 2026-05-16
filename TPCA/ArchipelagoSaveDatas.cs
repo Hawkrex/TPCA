@@ -4,7 +4,7 @@ namespace TPCA
 {
     internal class ArchipelagoSaveDatas
     {
-        public string ModName = MyPluginInfo.PLUGIN_NAME;
+        public string ModName = PluginInfo.PLUGIN_NAME;
 
         public string Guid { get; set; }
 

@@ -46,7 +46,15 @@ Issues with the most informations (description + debug log + save) will have the
 
 ## Technical functioning of the AP save (Boring programmer stuff)
 
-When clicking on the First Connection button, the client tries to connect to the AP server. Then by clicking on the Create button, the client generates a GUID (unique identifier) for the specified Player Name that is saved in both the TPC save file and on the AP server. The Host, Player Name and Password are also saved in the TPC save file to be able to connect automatically when loading the save. Afterward, the client disconnect from the AP server.
+### Save file creation
+When clicking on the First Connection button, the client tries to connect to the AP server. 
 
-When loading a save, the client tries to connect to the AP server with the informations in the TPC save file, then checks if the GUID in the save file match the GUID on the server, and finally launch the game.
-If there is a problem with the GUID, user only gets a warning and can continue at their own risks. If there is a problem connecting to the AP server when loading a save, user gets a warning and will be asked to fill new AP server informations to connect to a AP server. Once again the client check the matching of GUID that the user can bypass if wanted. A new GUID is the generated and is saved to the TPC save file as well as the new server connection informations.
+Then by clicking on the Create button, the client retrieve a GUID and the Locations from the server. The GUID (a unique identifier) is the SeedName, which is a value showed on the file of the server : `AP_[SeedName].archipelago`. 
+
+With this GUID, the client can check if there is another save containing the GUID of the server, preventing creating another save for the same AP server game.
+
+The GUID, Locations, Host, Player Name and Password are saved in the TPC save file to be able to connect automatically when loading the save. Afterward, the client disconnect from the AP server.
+
+### Save file loading
+When loading a save, the client connects to the AP server with the informations in the TPC save file, then checks if the GUID in the save file match the GUID on the server (A warning is logged if the GUIDs are different), and finally launch the game.
+

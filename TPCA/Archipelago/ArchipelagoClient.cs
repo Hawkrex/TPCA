@@ -84,19 +84,7 @@ namespace TPCA.Archipelago
             return loginResult as LoginSuccessful;
         }
 
-        public bool Connect()
-        {
-            var loginResult = TryConnect();
-            if (loginResult is LoginSuccessful loginSuccessful)
-            {
-                OnConnect(loginSuccessful);
-                return true;
-            }
-
-            return false;
-        }
-
-        private void OnConnect(LoginSuccessful login)
+        public void OnConnect(LoginSuccessful login)
         {
             if (!Plugin.State.SetupSession(login.SlotData, session.RoomState.Seed))
             {
@@ -334,12 +322,14 @@ namespace TPCA.Archipelago
             Plugin.Log.LogDebug($"Retrieved locations count <{Plugin.State.SaveDatas.Locations.Count()}>");
         }
 
-        internal bool DoesGuidExist()
+        internal string GetServerGuid()
         {
-            string savedGuid = Plugin.State.SaveDatas.Guid;
-            Plugin.Log.LogDebug($"GUID <{savedGuid}> exists for player <{session.Players.ActivePlayer.Name}>");
+            return session.RoomState.Seed;
+        }
 
-            return !string.IsNullOrEmpty(savedGuid);
+        internal void NotifyGuidAlreadyExists()
+        {
+            ArchipelagoState = ArchipelagoState.ConnectedButGuidExists;
         }
     }
 }

@@ -4,10 +4,10 @@ using HarmonyLib;
 
 namespace TPCA_Debug
 {
-    [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+    [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class Plugin : BaseUnityPlugin
     {
-        private static readonly Harmony Harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
+        private static readonly Harmony Harmony = new Harmony(PluginInfo.PLUGIN_GUID);
 
         internal static ManualLogSource Log;
 
@@ -15,11 +15,11 @@ namespace TPCA_Debug
         {
             Log = base.Logger;
 
-            Log.LogInfo($"PluginName: {MyPluginInfo.PLUGIN_NAME}, VersionString: {MyPluginInfo.PLUGIN_VERSION} is loading...");
+            Log.LogInfo($"PluginName: {PluginInfo.PLUGIN_NAME}, VersionString: {PluginInfo.PLUGIN_VERSION} is loading...");
 
             Harmony.PatchAll();
 
-            Log.LogInfo($"PluginName: {MyPluginInfo.PLUGIN_NAME}, VersionString: {MyPluginInfo.PLUGIN_VERSION} is loaded.");
+            Log.LogInfo($"PluginName: {PluginInfo.PLUGIN_NAME}, VersionString: {PluginInfo.PLUGIN_VERSION} is loaded.");
         }
 
         private void OnGUI()

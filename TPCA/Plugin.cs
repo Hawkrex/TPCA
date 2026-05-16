@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace TPCA
 {
-    [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+    [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     internal class Plugin : BaseUnityPlugin
     {
         internal static ManualLogSource Log;
@@ -16,7 +16,7 @@ namespace TPCA
 
         internal static bool ArchipelagoModeDeactivated;
 
-        private static readonly Harmony harmony = new(MyPluginInfo.PLUGIN_GUID);
+        private static readonly Harmony harmony = new(PluginInfo.PLUGIN_GUID);
 
         private static float update = 0;
 
@@ -25,14 +25,14 @@ namespace TPCA
             Log = base.Logger;
 
             Log.LogInfo($"Game version: {Application.version}");
-            Log.LogInfo($"PluginName: {MyPluginInfo.PLUGIN_NAME}, VersionString: {MyPluginInfo.PLUGIN_VERSION} is loading...");
+            Log.LogInfo($"PluginName: {PluginInfo.PLUGIN_NAME}, VersionString: {PluginInfo.PLUGIN_VERSION} is loading...");
 
             harmony.PatchAll();
 
             State = new("localhost:38281", "Player1", string.Empty);
             ArchipelagoClient = new();
 
-            Log.LogInfo($"PluginName: {MyPluginInfo.PLUGIN_NAME}, VersionString: {MyPluginInfo.PLUGIN_VERSION} is loaded.");
+            Log.LogInfo($"PluginName: {PluginInfo.PLUGIN_NAME}, VersionString: {PluginInfo.PLUGIN_VERSION} is loaded.");
         }
 
         private void Update()

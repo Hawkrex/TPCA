@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Archipelago.MultiClient.Net;
+using Newtonsoft.Json;
 using SpaceCraft;
 using System;
 using System.Collections.Generic;
@@ -44,7 +45,11 @@ namespace TPCA.Archipelago
 
             if (!Plugin.ArchipelagoClient.IsConnected)
             {
-                Plugin.ArchipelagoClient.Connect();
+                var loginResult = Plugin.ArchipelagoClient.TryConnect();
+                if (loginResult is LoginSuccessful loginSuccessful)
+                {
+                    Plugin.ArchipelagoClient.OnConnect(loginSuccessful);
+                }
             }
 
             InitializeSave(false);

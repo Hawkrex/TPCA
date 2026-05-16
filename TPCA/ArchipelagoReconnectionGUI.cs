@@ -1,4 +1,5 @@
-﻿using TPCA.Archipelago.Enums;
+﻿using Archipelago.MultiClient.Net;
+using TPCA.Archipelago.Enums;
 using UnityEngine;
 
 namespace TPCA
@@ -114,7 +115,11 @@ namespace TPCA
 
             if (isEnterKeyPressed || isButtonClicked)
             {
-                Plugin.ArchipelagoClient.Connect();
+                var loginResult = Plugin.ArchipelagoClient.TryConnect();
+                if (loginResult is LoginSuccessful loginSuccessful)
+                {
+                    Plugin.ArchipelagoClient.OnConnect(loginSuccessful);
+                }
             }
 
             GUI.EndGroup();
