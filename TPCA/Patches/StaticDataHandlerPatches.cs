@@ -19,7 +19,7 @@ namespace TPCA.Patches
 
         /// <summary>
         /// Executes before or override the method
-        /// Called when the game save loads
+        /// Called when the game save is created or is loaded
         /// Rewrite all the groups to make the randomisation (GroupLocations, GroupConstructibles and GroupItems)
         /// </summary>
         /// <param name="__instance">Instance of the data handler</param>
@@ -42,8 +42,6 @@ namespace TPCA.Patches
             var groupsData = __instance.staticAvailableObjects.groupsData;
             archipelagoTexture = LoadTexture("ArchipelagoItem.png");
             errorTexture = LoadTexture("ErrorTexture.png");
-
-
 
             GameManager.AllGroups = CreateGroups(groupsData); // First half of the original method (untouched)
 
@@ -165,7 +163,7 @@ namespace TPCA.Patches
         /// <returns>true if the groupdata is an Archipelago location</returns>
         private static bool IsAnArchipelagoLocation(GroupData groupData)
         {
-            return Plugin.ArchipelagoClient.GetLocationsNames().Contains(groupData.id);
+            return Plugin.State.SaveDatas.Locations.Contains(groupData.id);
         }
 
         /// <summary>

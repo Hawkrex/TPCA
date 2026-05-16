@@ -13,7 +13,7 @@ namespace TPCA.Archipelago
 
         public int ItemIndex { get; set; }
 
-        public ArchipelagoSaveInfos SaveInfos { get; set; }
+        public ArchipelagoSaveDatas SaveDatas { get; set; } = new ArchipelagoSaveDatas();
 
         public SlotData SlotData;
 

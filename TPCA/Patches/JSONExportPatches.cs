@@ -12,7 +12,7 @@ namespace TPCA.Patches
     [HarmonyPatch(typeof(JSONExport))]
     internal static class JSONExportPatches
     {
-        public static Dictionary<string, ArchipelagoSaveInfos> ArchipelagoInfosByNames = new();
+        public static Dictionary<string, ArchipelagoSaveDatas> ArchipelagoInfosByNames = new();
 
         /// <summary>
         /// Executes before the method
@@ -47,7 +47,7 @@ namespace TPCA.Patches
                 return;
             }
 
-            SaveArchipelagoSaveInfos(saveFileName);
+            SaveArchipelagoSaveDatas(saveFileName);
         }
 
         /// <summary>
@@ -65,19 +65,27 @@ namespace TPCA.Patches
                 return;
             }
 
-            SaveArchipelagoSaveInfos(_saveFileName);
+            SaveArchipelagoSaveDatas(_saveFileName);
         }
 
         /// <summary>
         /// Saves the Archipelago informations at the end of the save file
         /// </summary>
         /// <param name="saveFileName">Save filename</param>
-        private static void SaveArchipelagoSaveInfos(string saveFileName)
+        private static void SaveArchipelagoSaveDatas(string saveFileName)
         {
-            Plugin.Log.LogDebug($"{nameof(SaveArchipelagoSaveInfos)} => Save file <{saveFileName}>");
+            Plugin.Log.LogDebug($"{nameof(SaveArchipelagoSaveDatas)} => Save file <{saveFileName}>");
+            string infosJson = string.Empty;
+            try
+            {
+                infosJson = JsonConvert.SerializeObject(Plugin.State.SaveDatas);
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.LogFatal($"{nameof(SaveArchipelagoSaveDatas)} => Exception while trying to serialize Archipelago save datas : <{e}>");
+            }
 
-            string infosJson = JsonConvert.SerializeObject(Plugin.State.SaveInfos);
-            Plugin.Log.LogDebug($"{nameof(SaveArchipelagoSaveInfos)} => Infos to save <{infosJson}>");
+            Plugin.Log.LogDebug($"{nameof(SaveArchipelagoSaveDatas)} => Datas to save <{infosJson}>");
 
             string filePath = GetFullSaveFilePath(saveFileName);
 
@@ -88,7 +96,7 @@ namespace TPCA.Patches
             }
             catch (Exception ex)
             {
-                Plugin.Log.LogError($"{nameof(SaveArchipelagoSaveInfos)} => Error saving archipelago infos into save <{saveFileName}> : {ex}");
+                Plugin.Log.LogError($"{nameof(SaveArchipelagoSaveDatas)} => Error saving archipelago datas into save <{saveFileName}> : {ex}");
             }
         }
 
@@ -118,7 +126,7 @@ namespace TPCA.Patches
 
             if (lastLine != "@") // Normal game save end with a line containing only a "@"
             {
-                var infos = JsonConvert.DeserializeObject<ArchipelagoSaveInfos>(lastLine);
+                var infos = JsonConvert.DeserializeObject<ArchipelagoSaveDatas>(lastLine);
                 ArchipelagoInfosByNames[_saveFileName] = infos;
             }
         }

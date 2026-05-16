@@ -25,11 +25,11 @@ namespace TPCA.Patches
                 return;
             }
 
-            Plugin.State.SaveInfos = JSONExportPatches.ArchipelagoInfosByNames[fileName];
+            Plugin.State.SaveDatas = JSONExportPatches.ArchipelagoInfosByNames[fileName];
 
-            Plugin.State.Host = Plugin.State.SaveInfos.Host;
-            Plugin.State.PlayerName = Plugin.State.SaveInfos.PlayerName;
-            Plugin.State.Password = Plugin.State.SaveInfos.Password;
+            Plugin.State.Host = Plugin.State.SaveDatas.Host;
+            Plugin.State.PlayerName = Plugin.State.SaveDatas.PlayerName;
+            Plugin.State.Password = Plugin.State.SaveDatas.Password;
 
             if (Plugin.ArchipelagoClient.Connect())
             {
@@ -48,6 +48,7 @@ namespace TPCA.Patches
         [HarmonyPrefix]
         public static void AbortCreateNewFile_Prefix()
         {
+            Plugin.ArchipelagoClient.Disconnect();
             SaveFilesCreateNewPatches.ShowArchipelagoSettingsGUI = false;
         }
     }

@@ -1,6 +1,8 @@
-﻿namespace TPCA
+﻿using System.Collections.Generic;
+
+namespace TPCA
 {
-    internal class ArchipelagoSaveInfos
+    internal class ArchipelagoSaveDatas
     {
         public string ModName = MyPluginInfo.PLUGIN_NAME;
 
@@ -11,5 +13,7 @@
         public string PlayerName { get; set; }
 
         public string Password { get; set; }
+
+        public List<string> Locations { get; set; }
     }
 }

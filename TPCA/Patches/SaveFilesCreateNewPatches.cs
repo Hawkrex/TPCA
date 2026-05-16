@@ -9,7 +9,6 @@ namespace TPCA.Patches
     [HarmonyPatch(typeof(SaveFilesCreateNew))]
     internal class SaveFilesCreateNewPatches
     {
-        //public static bool ShowArchipelagoSettingsGUI => archipelagoModeCheckbox.GetStatus() && instance.isActiveAndEnabled;
         public static bool ShowArchipelagoSettingsGUI;
         private static bool isAlreadyInit;
 
@@ -137,17 +136,19 @@ namespace TPCA.Patches
                 return true;
             }
 
-            // If we are connected to the AP server, we generate a guid that we store on the AP server and in the game save (original code execution + JSONExportPatches.CreateNewSaveFile_Postfix)
+            // If we are connected to the AP server, we fetch AP datas (SeedName and Locations)
             if (Plugin.ArchipelagoClient.IsConnected)
             {
-                if (Plugin.ArchipelagoClient.CreateAndStoreGuid())
+                if (Plugin.ArchipelagoClient.FetchGameDatas())
                 {
                     Plugin.ArchipelagoClient.Disconnect();
+                    ShowArchipelagoSettingsGUI = false;
+
                     return true;
                 }
                 else
                 {
-                    Plugin.Log.LogError("Trying to communicate with AP server but client is not connected");
+                    Plugin.Log.LogError("Couldn't fetch necessary datas to create the save file!");
                 }
             }
 

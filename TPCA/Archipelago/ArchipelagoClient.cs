@@ -18,7 +18,7 @@ namespace TPCA.Archipelago
         private const string GameName = "The Planet Crafter";
 
         public ArchipelagoState ArchipelagoState { get; private set; }
-        public bool IsConnected => ArchipelagoState == ArchipelagoState.Connected || ArchipelagoState == ArchipelagoState.ConnectedButGuidExists;
+        public bool IsConnected => session?.Socket.Connected ?? false;
 
         private ArchipelagoSession session;
         private DeathLinkHandler deathLinkHandler;
@@ -79,14 +79,7 @@ namespace TPCA.Archipelago
 
             Plugin.Log.LogInfo($"Successfully connected to {Plugin.State.Host} as {Plugin.State.PlayerName}");
 
-            if (DoesGuidExist())
-            {
-                ArchipelagoState = ArchipelagoState.ConnectedButGuidExists;
-            }
-            else
-            {
-                ArchipelagoState = ArchipelagoState.Connected;
-            }
+            ArchipelagoState = ArchipelagoState.Connected;
 
             return loginResult as LoginSuccessful;
         }
@@ -132,9 +125,15 @@ namespace TPCA.Archipelago
             }
 
             isAttemptingConnection = false;
+
+            Plugin.Log.LogDebug("Disconnecting ...");
             Task.Run(() => { _ = session.Socket.DisconnectAsync(); }).Wait();
+            Plugin.Log.LogDebug("Disconnected");
+
             deathLinkHandler = null;
             session = null;
+
+            ArchipelagoState = ArchipelagoState.NotConnected;
         }
 
         private void SessionErrorReceived(Exception ex, string message)
@@ -293,30 +292,51 @@ namespace TPCA.Archipelago
             session?.Say(message);
         }
 
-        internal bool CreateAndStoreGuid()
+        internal bool FetchGameDatas()
         {
             if (!IsConnected)
             {
                 return false;
             }
 
-            string guid = Guid.NewGuid().ToString();
-            Plugin.State.SaveInfos = new ArchipelagoSaveInfos
-            {
-                Guid = guid,
-                Host = Plugin.State.Host,
-                PlayerName = Plugin.State.PlayerName,
-                Password = Plugin.State.Password
-            };
-            session.DataStorage[$"{session.Players.ActivePlayer.Name}_Guid"] = Plugin.State.SaveInfos.Guid;
-            Plugin.Log.LogDebug($"Saved GUID <{(string)session.DataStorage[$"{session.Players.ActivePlayer.Name}_Guid"]}> for player <{session.Players.ActivePlayer.Name}>");
+            FetchGuid();
+            FetchLocations();
 
             return true;
         }
 
+        private void FetchGuid()
+        {
+            if (string.IsNullOrEmpty(session.RoomState.Seed))
+            {
+                Plugin.Log.LogWarning("Couldn't retrieve SeedName from the server, no GUID will be set!");
+            }
+
+            Plugin.State.SaveDatas.Guid = session.RoomState.Seed;
+            Plugin.State.SaveDatas.Host = Plugin.State.Host;
+            Plugin.State.SaveDatas.PlayerName = Plugin.State.PlayerName;
+            Plugin.State.SaveDatas.Password = Plugin.State.Password;
+
+            Plugin.Log.LogDebug($"Retrieved GUID <{Plugin.State.SaveDatas.Guid}>");
+        }
+
+        private void FetchLocations()
+        {
+            var locations = GetLocationsNames();
+
+            if (!locations.Any())
+            {
+                Plugin.Log.LogWarning("Couldn't retrieve Locations from the server, no Locations will be set!");
+            }
+
+            Plugin.State.SaveDatas.Locations = locations.ToList();
+
+            Plugin.Log.LogDebug($"Retrieved locations count <{Plugin.State.SaveDatas.Locations.Count()}>");
+        }
+
         internal bool DoesGuidExist()
         {
-            string savedGuid = session.DataStorage[$"{session.Players.ActivePlayer.Name}_Guid"];
+            string savedGuid = Plugin.State.SaveDatas.Guid;
             Plugin.Log.LogDebug($"GUID <{savedGuid}> exists for player <{session.Players.ActivePlayer.Name}>");
 
             return !string.IsNullOrEmpty(savedGuid);
