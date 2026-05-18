@@ -3,12 +3,14 @@ using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
+using SpaceCraft;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TPCA.Archipelago.Enums;
 using TPCA.Datas;
+using TPCA.Patches;
 
 namespace TPCA.Archipelago
 {
@@ -182,17 +184,24 @@ namespace TPCA.Archipelago
             Plugin.Log.LogMessage(message);
         }
 
-        public void SendLocation(string locationName)
+        public void SendLocation(Group group)
         {
             if (!IsConnected)
             {
-                Plugin.Log.LogWarning($"Trying to send location {locationName} but there is no connection");
+                Plugin.Log.LogWarning($"Trying to send location {group.id} but there is no connection");
                 return;
             }
 
-            long locationId = session.Locations.GetLocationIdFromName(GameName, locationName);
+            long locationId = session.Locations.GetLocationIdFromName(GameName, group.id);
             Plugin.Log.LogInfo($"Trying to send location {locationId}");
             _ = session.Locations.CompleteLocationChecksAsync(locationId);
+
+            // Show popup with the item sent informations when
+            var itemInfos = Plugin.State.ItemByLocations[group.id];
+            if (!itemInfos.IsLocal)
+            {
+                PopupsHandlerPatches.SendPopup(new PopupData(group.GetImage(), $"Send item '{itemInfos.Name}' to {itemInfos.PlayerName}", 5f));
+            }
         }
 
         public bool SyncLocations(List<long> locations)

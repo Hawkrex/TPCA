@@ -31,8 +31,8 @@ namespace TPCA.Patches
                 return true;
             }
 
-            Plugin.Log.LogInfo($"{nameof(UnlockGroupGlobally_Prefix)} => Unlocked microchip location {group.GetGroupData().id}");
-            Plugin.ArchipelagoClient.SendLocation(group.GetGroupData().id);
+            Plugin.Log.LogInfo($"{nameof(UnlockGroupGlobally_Prefix)} => Unlocked microchip location {group.id}");
+            Plugin.ArchipelagoClient.SendLocation(group);
 
             // Code from UnlockGroupGloballyServerRpc
             // Fixes microchip blueprints not working after Tier1

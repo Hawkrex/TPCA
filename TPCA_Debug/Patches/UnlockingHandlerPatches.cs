@@ -14,7 +14,7 @@ namespace TPCA_Debug.Patches
         {
             if (!Environment.StackTrace.Contains("AlertUnlockables"))
             {
-                Plugin.Log.LogInfo($"GetUnlockableGroupsUnderUnit > StackTrace {Environment.StackTrace}");
+                //Plugin.Log.LogInfo($"GetUnlockableGroupsUnderUnit > StackTrace {Environment.StackTrace}");
                 return true;
             }
 

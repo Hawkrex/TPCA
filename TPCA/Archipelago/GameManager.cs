@@ -188,7 +188,7 @@ namespace TPCA.Archipelago
                         if (hasInited)
                         {
                             Plugin.Log.LogInfo($"{nameof(GameManager)}::{nameof(CheckForLocationsUnlocked)} => Unlocked blueprint location {group.id}");
-                            Plugin.ArchipelagoClient.SendLocation(group.id);
+                            Plugin.ArchipelagoClient.SendLocation(group);
                         }
 
                         previouslyKnowUnlockedGroups.Add(group);
