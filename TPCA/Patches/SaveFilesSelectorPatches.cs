@@ -35,7 +35,7 @@ namespace TPCA.Patches
             var loginResult = Plugin.ArchipelagoClient.TryConnect();
             if (loginResult is LoginSuccessful loginSuccessful)
             {
-                if(Plugin.State.SaveDatas.Guid == Plugin.ArchipelagoClient.GetServerGuid())
+                if(Plugin.State.SaveDatas.Guid != Plugin.ArchipelagoClient.GetServerGuid())
                 {
                     Plugin.Log.LogWarning($"{nameof(SelectedSaveFile_Postfix)} => Loading a save where the GUID doesn't match with the server automatically connected to, please check the informations of the server you are connected to!");
                 }
