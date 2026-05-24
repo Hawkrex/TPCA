@@ -219,7 +219,14 @@ namespace TPCA.Patches
 
             //Plugin.Log.LogDebug($"Icon modified");
 
-            return Sprite.Create(texture ?? errorTexture, new Rect(0f, 0f, texture.width, texture.height), Vector2.zero);
+            if (texture != null)
+            {
+                return Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), Vector2.zero);
+            }
+            else
+            {
+                return Sprite.Create(errorTexture, new Rect(0f, 0f, errorTexture.width, errorTexture.height), Vector2.zero);
+            }
         }
 
         /// <summary>
