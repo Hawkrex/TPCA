@@ -35,8 +35,7 @@ namespace TPCA.Patches
 
             if (!Plugin.ArchipelagoClient.IsConnected)
             {
-                Plugin.Log.LogDebug($"{nameof(LoadStaticData_Prefix)} => Archipelago not connected to the AP server");
-                return true;
+                Plugin.Log.LogWarning($"{nameof(LoadStaticData_Prefix)} => Launching game without connection to the server");
             }
 
             var groupsData = __instance.staticAvailableObjects.groupsData;
@@ -163,7 +162,7 @@ namespace TPCA.Patches
         /// <returns>true if the groupdata is an Archipelago location</returns>
         private static bool IsAnArchipelagoLocation(GroupData groupData)
         {
-            return Plugin.State.SaveDatas.Locations.Contains(groupData.id);
+            return Plugin.State.ItemByLocations.Keys.Contains(groupData.id);
         }
 
         /// <summary>

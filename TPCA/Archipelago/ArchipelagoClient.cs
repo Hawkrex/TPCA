@@ -95,7 +95,7 @@ namespace TPCA.Archipelago
 
             deathLinkHandler = new DeathLinkHandler(session.CreateDeathLinkService(), Plugin.State.PlayerName, Plugin.State.SlotData.DeathLink);
             isAttemptingConnection = false;
-            ScoutAllLocations();
+            Plugin.State.ItemByLocations = ScoutAllLocations();
         }
 
         private void SetupSession()
@@ -216,11 +216,11 @@ namespace TPCA.Archipelago
             return true;
         }
 
-        public void ScoutAllLocations()
+        public Dictionary<string, ApItemInfo> ScoutAllLocations()
         {
             if (!IsConnected)
             {
-                return;
+                return null;
             }
 
             var scouts = session.Locations.ScoutLocationsAsync([.. session.Locations.AllLocations]).ContinueWith(task =>
@@ -243,7 +243,8 @@ namespace TPCA.Archipelago
                 return itemByLocations;
             });
             scouts.Wait();
-            Plugin.State.ItemByLocations = scouts.Result;
+
+            return scouts.Result;
         }
 
         public IEnumerable<string> GetLocationsNames()
@@ -319,14 +320,12 @@ namespace TPCA.Archipelago
 
         private void FetchLocations()
         {
-            var locations = GetLocationsNames();
+            Plugin.State.SaveDatas.Locations = ScoutAllLocations();
 
-            if (!locations.Any())
+            if (!Plugin.State.SaveDatas.Locations.Any())
             {
                 Plugin.Log.LogWarning("Couldn't retrieve Locations from the server, no Locations will be set!");
             }
-
-            Plugin.State.SaveDatas.Locations = locations.ToList();
 
             Plugin.Log.LogDebug($"Retrieved locations count <{Plugin.State.SaveDatas.Locations.Count()}>");
         }

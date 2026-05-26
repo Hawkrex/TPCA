@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TPCA.Archipelago;
 
 namespace TPCA
 {
@@ -14,6 +15,6 @@ namespace TPCA
 
         public string Password { get; set; }
 
-        public List<string> Locations { get; set; }
+        public Dictionary<string, ApItemInfo> Locations { get; set; }
     }
 }

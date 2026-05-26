@@ -114,7 +114,7 @@ namespace TPCA
 
             if (isEnterKeyPressed || isButtonClicked)
             {
-                Plugin.ArchipelagoClient.TryConnect();
+                Plugin.ArchipelagoClient.TryConnect(); // First connection (Save creation menu)
             }
 
             GUI.EndGroup();

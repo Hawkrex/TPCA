@@ -43,31 +43,6 @@ namespace TPCA.Patches
 
                 return false;
             }
-            else if (Environment.StackTrace.Contains("AlertUnlockables")) // Sending location
-            {
-                if (!Plugin.State.ItemByLocations.ContainsKey(_group.id))
-                {
-                    Plugin.Log.LogWarning($"{nameof(PopNewUnlockable_Prefix)} => Couldn't find location <{_group.id}> in ItemByLocations dictionary");
-                    return false;
-                }
-                else
-                {
-                    var itemInfos = Plugin.State.ItemByLocations[_group.id];
-                    Plugin.Log.LogDebug($"{nameof(PopNewUnlockable_Prefix)} => Location {_group.id} unlocked {itemInfos.Name} for player {itemInfos.PlayerName} and is local ? <{itemInfos.IsLocal}>");
-
-                    if (!itemInfos.IsLocal) // Send item to someone
-                    {
-                        Plugin.Log.LogDebug($"{nameof(PopNewUnlockable_Prefix)} => Location unlocked, modifying the popup ...");
-
-                        var popupData = new PopupData(_group.GetImage(), $"Send item {itemInfos.Name} to {itemInfos.PlayerName}", 5f);
-                        AccessTools.Method(typeof(PopupsHandler), "AddToList").Invoke(__instance, [popupData]);
-                    }
-
-                    // Else, you'll get notified when receiving the item from the AP server
-                    // In both case, no need to execute the original code
-                    return false;
-                }
-            }
 
             //Plugin.Log.LogDebug($"{nameof(PopNewUnlockable_Prefix)} => StackTrace : {Environment.StackTrace}");
             return true;

@@ -115,7 +115,7 @@ namespace TPCA
 
             if (isEnterKeyPressed || isButtonClicked)
             {
-                var loginResult = Plugin.ArchipelagoClient.TryConnect();
+                var loginResult = Plugin.ArchipelagoClient.TryConnect(); // Reconnection ingame
                 if (loginResult is LoginSuccessful loginSuccessful)
                 {
                     Plugin.ArchipelagoClient.OnConnect(loginSuccessful);

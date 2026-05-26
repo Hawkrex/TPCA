@@ -45,7 +45,7 @@ namespace TPCA.Archipelago
 
             if (!Plugin.ArchipelagoClient.IsConnected)
             {
-                var loginResult = Plugin.ArchipelagoClient.TryConnect();
+                var loginResult = Plugin.ArchipelagoClient.TryConnect(); // Unused
                 if (loginResult is LoginSuccessful loginSuccessful)
                 {
                     Plugin.ArchipelagoClient.OnConnect(loginSuccessful);

@@ -176,7 +176,10 @@ namespace TPCA_Debug
             {
                 var pm = Managers.GetManager<PlayersManager>().GetActivePlayerController();
                 var inv = pm.GetPlayerBackpack().GetInventory();
-                var gr = GroupsHandler.GetGroupViaId("Jetpack5");
+                var gr = GroupsHandler.GetGroupViaId("EquipmentIncrease4");
+                InventoriesHandler.Instance.AddItemToInventory(gr, inv);
+
+                gr = GroupsHandler.GetGroupViaId("MultiBuild");
                 InventoriesHandler.Instance.AddItemToInventory(gr, inv);
 
                 gr = GroupsHandler.GetGroupViaId("Backpack7");
@@ -188,7 +191,7 @@ namespace TPCA_Debug
                 gr = GroupsHandler.GetGroupViaId("OxygenTank5");
                 InventoriesHandler.Instance.AddItemToInventory(gr, inv);
 
-                gr = GroupsHandler.GetGroupViaId("EquipmentIncrease4");
+                gr = GroupsHandler.GetGroupViaId("Jetpack5");
                 InventoriesHandler.Instance.AddItemToInventory(gr, inv);
 
                 gr = GroupsHandler.GetGroupViaId("ScreenEnergy");
@@ -222,6 +225,92 @@ namespace TPCA_Debug
                 var pm = Managers.GetManager<PlayersManager>().GetActivePlayerController();
                 var inv = pm.GetPlayerBackpack().GetInventory();
                 var gr = GroupsHandler.GetGroupViaId("OreExtractor3");
+                InventoriesHandler.Instance.AddItemToInventory(gr, inv);
+            }
+
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+
+            if (GUILayout.Button("Iron", buttonStyle))
+            {
+                var pm = Managers.GetManager<PlayersManager>().GetActivePlayerController();
+                var inv = pm.GetPlayerBackpack().GetInventory();
+                var gr = GroupsHandler.GetGroupViaId("Iron");
+                InventoriesHandler.Instance.AddItemToInventory(gr, inv);
+            }
+
+            if (GUILayout.Button("Titanium", buttonStyle))
+            {
+                var pm = Managers.GetManager<PlayersManager>().GetActivePlayerController();
+                var inv = pm.GetPlayerBackpack().GetInventory();
+                var gr = GroupsHandler.GetGroupViaId("Titanium");
+                InventoriesHandler.Instance.AddItemToInventory(gr, inv);
+            }
+
+            if (GUILayout.Button("Aluminium", buttonStyle))
+            {
+                var pm = Managers.GetManager<PlayersManager>().GetActivePlayerController();
+                var inv = pm.GetPlayerBackpack().GetInventory();
+                var gr = GroupsHandler.GetGroupViaId("Aluminium");
+                InventoriesHandler.Instance.AddItemToInventory(gr, inv);
+            }
+
+            if (GUILayout.Button("Silicon", buttonStyle))
+            {
+                var pm = Managers.GetManager<PlayersManager>().GetActivePlayerController();
+                var inv = pm.GetPlayerBackpack().GetInventory();
+                var gr = GroupsHandler.GetGroupViaId("Silicon");
+                InventoriesHandler.Instance.AddItemToInventory(gr, inv);
+            }
+
+            if (GUILayout.Button("Cobalt", buttonStyle))
+            {
+                var pm = Managers.GetManager<PlayersManager>().GetActivePlayerController();
+                var inv = pm.GetPlayerBackpack().GetInventory();
+                var gr = GroupsHandler.GetGroupViaId("Cobalt");
+                InventoriesHandler.Instance.AddItemToInventory(gr, inv);
+            }
+
+            if (GUILayout.Button("Magnesium", buttonStyle))
+            {
+                var pm = Managers.GetManager<PlayersManager>().GetActivePlayerController();
+                var inv = pm.GetPlayerBackpack().GetInventory();
+                var gr = GroupsHandler.GetGroupViaId("Magnesium");
+                InventoriesHandler.Instance.AddItemToInventory(gr, inv);
+            }
+
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+
+            if (GUILayout.Button("Iridium", buttonStyle))
+            {
+                var pm = Managers.GetManager<PlayersManager>().GetActivePlayerController();
+                var inv = pm.GetPlayerBackpack().GetInventory();
+                var gr = GroupsHandler.GetGroupViaId("Iridium");
+                InventoriesHandler.Instance.AddItemToInventory(gr, inv);
+            }
+
+            if (GUILayout.Button("Uranium", buttonStyle))
+            {
+                var pm = Managers.GetManager<PlayersManager>().GetActivePlayerController();
+                var inv = pm.GetPlayerBackpack().GetInventory();
+                var gr = GroupsHandler.GetGroupViaId("Uranim");
+                InventoriesHandler.Instance.AddItemToInventory(gr, inv);
+            }
+
+            if (GUILayout.Button("Alloy", buttonStyle))
+            {
+                var pm = Managers.GetManager<PlayersManager>().GetActivePlayerController();
+                var inv = pm.GetPlayerBackpack().GetInventory();
+                var gr = GroupsHandler.GetGroupViaId("Alloy");
+                InventoriesHandler.Instance.AddItemToInventory(gr, inv);
+            }
+
+            if (GUILayout.Button("Osmium", buttonStyle))
+            {
+                var pm = Managers.GetManager<PlayersManager>().GetActivePlayerController();
+                var inv = pm.GetPlayerBackpack().GetInventory();
+                var gr = GroupsHandler.GetGroupViaId("Osmium");
                 InventoriesHandler.Instance.AddItemToInventory(gr, inv);
             }
 
