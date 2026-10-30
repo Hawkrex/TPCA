@@ -162,7 +162,7 @@ namespace TPCA.Patches
 
         private static bool DoesSaveAlreadyExistsWithGuid()
         {
-            foreach (var datas in JSONExportPatches.ArchipelagoDatasBySaveNames)
+            foreach (var datas in Plugin.ArchipelagoDatasBySaveNames)
             {
                 if (datas.Value.Guid == Plugin.ArchipelagoClient.GetServerGuid())
                 {

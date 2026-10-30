@@ -12,8 +12,6 @@ namespace TPCA.Patches
     [HarmonyPatch(typeof(JSONExport))]
     internal static class JSONExportPatches
     {
-        public static Dictionary<string, ArchipelagoSaveDatas> ArchipelagoDatasBySaveNames = new();
-
         /// <summary>
         /// Executes before the method
         /// Called when creating a new game
@@ -115,7 +113,7 @@ namespace TPCA.Patches
                 return;
             }
 
-            if (ArchipelagoDatasBySaveNames.ContainsKey(_saveFileName))
+            if (Plugin.ArchipelagoDatasBySaveNames.ContainsKey(_saveFileName))
             {
                 Plugin.Log.LogDebug($"{nameof(LoadFromJson_Postfix)} => Infos already loaded for save <{_saveFileName}>");
                 return;
@@ -127,7 +125,7 @@ namespace TPCA.Patches
             if (lastLine != "@") // Normal game save end with a line containing only a "@"
             {
                 var infos = JsonConvert.DeserializeObject<ArchipelagoSaveDatas>(lastLine);
-                ArchipelagoDatasBySaveNames[_saveFileName] = infos;
+                Plugin.ArchipelagoDatasBySaveNames[_saveFileName] = infos;
             }
         }
 
@@ -156,7 +154,7 @@ namespace TPCA.Patches
                 return;
             }
 
-            ArchipelagoDatasBySaveNames.Remove(_saveFileName);
+            Plugin.ArchipelagoDatasBySaveNames.Remove(_saveFileName);
         }
     }
 }

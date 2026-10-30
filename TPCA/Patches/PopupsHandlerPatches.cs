@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using SpaceCraft;
 using System;
+using TPCA.Core;
 
 namespace TPCA.Patches
 {
@@ -24,7 +25,7 @@ namespace TPCA.Patches
                 return true;
             }
 
-            if (Environment.StackTrace.Contains(nameof(Archipelago.GameManager.UnlockItem))) // Item received from AP server
+            if (Environment.StackTrace.Contains(nameof(GameManager.UnlockItem))) // Item received from AP server
             {
                 Plugin.Log.LogDebug($"{nameof(PopNewUnlockable_Prefix)} => Received item from AP server, modifying the popup ...");
 
@@ -38,6 +39,8 @@ namespace TPCA.Patches
                     message = $"Received {_group.id} from {Plugin.State.ItemByLocations[_group.id].PlayerName}";
                 }
 
+                Plugin.Log.LogDebug($"{nameof(PopNewUnlockable_Prefix)} => Message : {message}");
+
                 var popupData = new PopupData(_group.GetImage(), message, 5f);
                 AccessTools.Method(typeof(PopupsHandler), "AddToList").Invoke(__instance, [popupData]);
 
@@ -46,11 +49,6 @@ namespace TPCA.Patches
 
             //Plugin.Log.LogDebug($"{nameof(PopNewUnlockable_Prefix)} => StackTrace : {Environment.StackTrace}");
             return true;
-        }
-
-        public static void SendPopup(PopupData popupData)
-        {
-            AccessTools.Method(typeof(PopupsHandler), "AddToList").Invoke(Managers.GetManager<PopupsHandler>(), [popupData]);
         }
     }
 }

@@ -22,14 +22,14 @@ namespace TPCA.Patches
         [HarmonyPrefix]
         public static bool SetData_Prefix(string fileName, TextMeshProUGUI ___gameModeText)
         {
-            if (JSONExportPatches.ArchipelagoDatasBySaveNames == null || !JSONExportPatches.ArchipelagoDatasBySaveNames.ContainsKey(fileName))
+            if (Plugin.ArchipelagoDatasBySaveNames == null || !Plugin.ArchipelagoDatasBySaveNames.ContainsKey(fileName))
             {
                 return true;
             }
 
             CreateArchipelagoIdTextComponent(___gameModeText);
 
-            var archipelagoInfos = JSONExportPatches.ArchipelagoDatasBySaveNames[fileName];
+            var archipelagoInfos = Plugin.ArchipelagoDatasBySaveNames[fileName];
             text.text = $"AP  {archipelagoInfos.Guid}";
 
             text.GetComponent<RectTransform>().localPosition += new Vector3(10, 10);

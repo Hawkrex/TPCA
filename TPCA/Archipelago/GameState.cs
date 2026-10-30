@@ -1,17 +1,14 @@
 ﻿using System.Collections.Generic;
+using TPCA.Core;
 
 namespace TPCA.Archipelago
 {
-    internal class ArchipelagoGameState
+    internal class GameState
     {
-        public bool IsValid;
-
         public string Host;
         public string PlayerName;
         public string Password;
         public string Seed;
-
-        public int ItemIndex { get; set; }
 
         public ArchipelagoSaveDatas SaveDatas { get; set; } = new ArchipelagoSaveDatas();
 
@@ -21,26 +18,11 @@ namespace TPCA.Archipelago
 
         public Dictionary<string, ApItemInfo> ItemByLocations { get; set; }
 
-        public ArchipelagoGameState(string host, string slotName, string password)
+        public GameState(string host, string slotName, string password)
         {
             Host = host;
             PlayerName = slotName;
             Password = password;
-        }
-
-        public void UpdateConnection(string host, string slotName, string password)
-        {
-            Host = host;
-            PlayerName = slotName;
-            Password = password;
-        }
-
-        public void ClearConnection()
-        {
-            IsValid = false;
-
-            Seed = string.Empty;
-            SlotData = null;
         }
 
         public bool SetupSession(Dictionary<string, object> roomSlotData, string roomSeed)
@@ -48,13 +30,6 @@ namespace TPCA.Archipelago
             SlotData = new SlotData(roomSlotData);
             Seed = roomSeed;
             return GameManager.ConnectSave();
-        }
-
-        internal void ClearSave()
-        {
-            IsValid = false;
-
-            ItemIndex = 0;
         }
     }
 }

@@ -1,16 +1,16 @@
 ﻿using Archipelago.MultiClient.Net;
-using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
+using HarmonyLib;
 using SpaceCraft;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TPCA.Archipelago.Enums;
+using TPCA.Core;
 using TPCA.Datas;
-using TPCA.Patches;
 
 namespace TPCA.Archipelago
 {
@@ -23,7 +23,6 @@ namespace TPCA.Archipelago
         public bool IsConnected => session?.Socket.Connected ?? false;
 
         private ArchipelagoSession session;
-        private DeathLinkHandler deathLinkHandler;
 
         private bool isAttemptingConnection;
 
@@ -93,7 +92,6 @@ namespace TPCA.Archipelago
                 return;
             }
 
-            deathLinkHandler = new DeathLinkHandler(session.CreateDeathLinkService(), Plugin.State.PlayerName, Plugin.State.SlotData.DeathLink);
             isAttemptingConnection = false;
             Plugin.State.ItemByLocations = ScoutAllLocations();
         }
@@ -120,7 +118,6 @@ namespace TPCA.Archipelago
             Task.Run(() => { _ = session.Socket.DisconnectAsync(); }).Wait();
             Plugin.Log.LogDebug("Disconnected");
 
-            deathLinkHandler = null;
             session = null;
 
             ArchipelagoState = ArchipelagoState.NotConnected;
@@ -200,8 +197,14 @@ namespace TPCA.Archipelago
             var itemInfos = Plugin.State.ItemByLocations[group.id];
             if (!itemInfos.IsLocal)
             {
-                PopupsHandlerPatches.SendPopup(new PopupData(group.GetImage(), $"Send item '{itemInfos.Name}' to {itemInfos.PlayerName}", 5f));
+                SendPopup(new PopupData(group.GetImage(), $"Send item '{itemInfos.Name}' to {itemInfos.PlayerName}", 5f));
             }
+        }
+
+        public static void SendPopup(PopupData popupData)
+        {
+            Plugin.Log.LogDebug($"{nameof(SendPopup)} => Message : {popupData.text}");
+            AccessTools.Method(typeof(PopupsHandler), "AddToList").Invoke(Managers.GetManager<PopupsHandler>(), [popupData]);
         }
 
         public bool SyncLocations(List<long> locations)
@@ -260,34 +263,6 @@ namespace TPCA.Archipelago
             }
 
             session.SetGoalAchieved();
-        }
-
-        public void SendDeath()
-        {
-            deathLinkHandler?.SendDeathLink();
-        }
-
-        public void ToggleDeathLink()
-        {
-            deathLinkHandler?.ToggleDeathLink();
-        }
-
-        public bool DeathLinkEnabled()
-        {
-            return deathLinkHandler.IsDeathLinkEnabled;
-        }
-
-        public void CheckForDeath()
-        {
-            if (GameManager.CanBeKilled())
-            {
-                deathLinkHandler?.KillPlayer();
-            }
-        }
-
-        public void SendMessage(string message)
-        {
-            session?.Say(message);
         }
 
         internal bool FetchGameDatas()

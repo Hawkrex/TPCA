@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TPCA.Archipelago;
+using TPCA.Core;
 using TPCA.Datas;
 using UnityEngine;
 

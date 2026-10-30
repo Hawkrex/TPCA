@@ -4,6 +4,7 @@ using TPCA.Archipelago.Enums;
 
 namespace TPCA.Archipelago
 {
+    // Informations sent by the server about the game
     internal class SlotData
     {
         public Goal Goal { get; set; }

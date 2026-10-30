@@ -1,11 +1,13 @@
 ﻿using Archipelago.MultiClient.Net;
-using Newtonsoft.Json;
 using SpaceCraft;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TPCA.Archipelago;
+using TPCA.Archipelago.Enums;
+using static SpaceCraft.MachineDeparturePlatform;
 
-namespace TPCA.Archipelago
+namespace TPCA.Core
 {
     internal static class GameManager
     {
@@ -16,74 +18,77 @@ namespace TPCA.Archipelago
 
         public static string DeathSource { get; private set; }
 
-        private static bool saveNew;
-        private static bool saveLoaded;
-        private static bool saveInitialized;
-
         private static HashSet<Group> previouslyKnowUnlockedGroups = new HashSet<Group>();
 
-        public static void SetupNewSave()
+        internal static bool isInitiated = false;
+
+        public static void CheckCompletion(DepartureType endingType)
         {
-            saveNew = true;
-            saveLoaded = true;
-            Plugin.State.ClearSave();
+            Plugin.Log.LogDebug($"{nameof(CheckCompletion)} => Departure made with ending <{endingType}>");
+            Plugin.Log.LogDebug($"{nameof(CheckCompletion)} => Goal was <{Plugin.State.SlotData.Goal}>");
+
+            switch (endingType)
+            {
+                case DepartureType.EndingSentinel:
+                    if (Plugin.State.SlotData.Goal == Goal.PrimeSentinel)
+                    {
+                        Plugin.ArchipelagoClient.SendCompletion();
+                    }
+                    break;
+                case DepartureType.EndingRiley:
+                    if (Plugin.State.SlotData.Goal == Goal.PrimeSmugglers)
+                    {
+                        Plugin.ArchipelagoClient.SendCompletion();
+                    }
+                    break;
+                case DepartureType.EndingWardens:
+                    if (Plugin.State.SlotData.Goal == Goal.PrimeWardens)
+                    {
+                        Plugin.ArchipelagoClient.SendCompletion();
+                    }
+                    break;
+                case DepartureType.EndingHumbleSentinel:
+                    break;
+                case DepartureType.EndingHumbleStarform:
+                    break;
+                case DepartureType.EndingHumbleSolo:
+                    break;
+                case DepartureType.EndingToxicitySolo:
+                    break;
+                case DepartureType.EndingToxicityEternastra:
+                    break;
+                case DepartureType.EndingToxicityDassetex:
+                    break;
+            }
         }
 
-        public static void LoadSave()
+        public static void LoadSave(string filename)
         {
-            if (saveLoaded)
+            Plugin.State.SaveDatas = Plugin.ArchipelagoDatasBySaveNames[filename];
+
+            Plugin.State.Host = Plugin.State.SaveDatas.Host;
+            Plugin.State.PlayerName = Plugin.State.SaveDatas.PlayerName;
+            Plugin.State.Password = Plugin.State.SaveDatas.Password;
+
+            Plugin.State.ItemByLocations = Plugin.State.SaveDatas.Locations;
+
+            var loginResult = Plugin.ArchipelagoClient.TryConnect(); // On game load
+            if (loginResult is LoginSuccessful loginSuccessful)
             {
-                return;
-            }
-
-            saveNew = false;
-            saveLoaded = true;
-
-            Plugin.State.CheckedLocations ??= [];
-
-            Plugin.State.IsValid = true;
-
-            if (!Plugin.ArchipelagoClient.IsConnected)
-            {
-                var loginResult = Plugin.ArchipelagoClient.TryConnect(); // Unused
-                if (loginResult is LoginSuccessful loginSuccessful)
+                if (Plugin.State.SaveDatas.Guid != Plugin.ArchipelagoClient.GetServerGuid())
                 {
-                    Plugin.ArchipelagoClient.OnConnect(loginSuccessful);
+                    Plugin.Log.LogWarning($"{nameof(LoadSave)} => Loading a save where the GUID doesn't match with the server automatically connected to, please check the informations of the server you are connected to!");
                 }
+
+                Plugin.ArchipelagoClient.OnConnect(loginSuccessful);
+                Plugin.Log.LogInfo($"{nameof(LoadSave)} => Automatic connection on save loading successful");
             }
 
-            InitializeSave(false);
             _ = ConnectSave();
-        }
-
-        public static void InitializeSave(bool isNew)
-        {
-            if (saveInitialized)
-            {
-                return;
-            }
-
-            // Init save with options from Plugin.State.SlotData
-
-            saveInitialized = true;
         }
 
         public static bool ConnectSave()
         {
-            saveNew = true;
-            /*if (!saveLoaded)
-            {
-                Plugin.Log.LogError("Save not loaded");
-                return true;
-            }
-
-            if (!saveValid)
-            {
-                Plugin.Log.LogError("Save not valid");
-                Plugin.ArchipelagoClient.Disconnect();
-                return false;
-            }*/
-
             if (!Plugin.ArchipelagoClient.IsConnected)
             {
                 Plugin.Log.LogError($"{nameof(GameManager)}::{nameof(ConnectSave)} => Not connected");
@@ -91,18 +96,8 @@ namespace TPCA.Archipelago
             }
 
             string seed = Plugin.State.Seed;
-            var slotData = Plugin.State.SlotData;
-            bool isNew = saveNew;
 
-            if (saveNew)
-            {
-                Plugin.Log.LogInfo($"{nameof(GameManager)}::{nameof(ConnectSave)} => Save new");
-                saveNew = false;
-                Plugin.State.IsValid = true;
-
-                UpdateSaveData();
-            }
-            else if (seed != Plugin.State.Seed)
+            if (seed != Plugin.State.Seed)
             {
                 Plugin.Log.LogError($"{nameof(GameManager)}::{nameof(ConnectSave)} => Mismatched seed detected. Did you load the right save?");
                 Plugin.ArchipelagoClient.Disconnect();
@@ -110,31 +105,10 @@ namespace TPCA.Archipelago
 
             Plugin.Log.LogInfo($"{nameof(GameManager)}::{nameof(ConnectSave)} => Init save ...");
             Plugin.ArchipelagoClient.SyncLocations(Plugin.State.CheckedLocations);
-            InitializeSave(isNew);
+
             Plugin.Log.LogInfo($"{nameof(GameManager)}::{nameof(ConnectSave)} => Init save done");
 
             return true;
-        }
-
-        public static void UpdateSaveData()
-        {
-            if (!Plugin.State.IsValid)
-            {
-                return;
-            }
-
-            var data = JsonConvert.SerializeObject(Plugin.State);
-            // TODO SaveManager.SaveObject(SaveObjectId, data, SaveRoomId);
-        }
-
-        public static void ExitSave()
-        {
-            saveNew = false;
-            saveLoaded = false;
-            saveInitialized = false;
-            Plugin.State.ClearConnection();
-            Plugin.State.ClearSave();
-            // TODO SaveManager.SaveObject(SaveObjectId, "", SaveRoomId);
         }
 
         public static void Update()
@@ -142,22 +116,20 @@ namespace TPCA.Archipelago
             CheckForLocationsUnlocked();
 
             // Check for items received
-            if (CanGetItem() && IncomingItems.TryDequeue(out var item))
+            if (IncomingItems.TryDequeue(out var item))
             {
-                if (item.Index < Plugin.State.ItemIndex)
+                bool conditionToDo = false;
+                if (conditionToDo)
                 {
                     Plugin.Log.LogInfo($"{nameof(GameManager)}::{nameof(Update)} => Ignoring previously obtained item {item.Name}");
                 }
                 else
                 {
                     Plugin.Log.LogInfo($"{nameof(GameManager)}::{nameof(Update)} => Obtained item {item.Name}");
-                    Plugin.State.ItemIndex++;
                     var display = UnlockItem(item);
                 }
             }
         }
-
-        internal static bool hasInited = false;
 
         private static void CheckForLocationsUnlocked()
         {
@@ -185,7 +157,7 @@ namespace TPCA.Archipelago
                 {
                     if (!previouslyKnowUnlockedGroups.Contains(group))
                     {
-                        if (hasInited)
+                        if (isInitiated)
                         {
                             Plugin.Log.LogInfo($"{nameof(GameManager)}::{nameof(CheckForLocationsUnlocked)} => Unlocked blueprint location {group.id}");
                             Plugin.ArchipelagoClient.SendLocation(group);
@@ -196,7 +168,7 @@ namespace TPCA.Archipelago
                 }
             }
 
-            hasInited = true;
+            isInitiated = true;
         }
 
         public static bool UnlockItem(ApItemInfo item)
@@ -210,29 +182,6 @@ namespace TPCA.Archipelago
             }
 
             return false;
-        }
-
-        public static bool CanGetItem()
-        {
-            // TODO
-            return true;// Plugin.State.IsValid;
-        }
-
-        public static bool CanDisplayMessage()
-        {
-            // TODO
-            return false;
-        }
-
-        public static bool CanBeKilled()
-        {
-            // TODO
-            return false;
-        }
-
-        public static void ReceiveDeath(string source)
-        {
-            DeathSource = source;
         }
     }
 }

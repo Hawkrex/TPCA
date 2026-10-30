@@ -1,7 +1,9 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using System.Collections.Generic;
 using TPCA.Archipelago;
+using TPCA.Core;
 using TPCA.Patches;
 using UnityEngine;
 
@@ -12,7 +14,8 @@ namespace TPCA
     {
         internal static ManualLogSource Log;
         internal static ArchipelagoClient ArchipelagoClient;
-        internal static ArchipelagoGameState State;
+        internal static GameState State;
+        internal static Dictionary<string, ArchipelagoSaveDatas> ArchipelagoDatasBySaveNames = new();
 
         internal static bool ArchipelagoModeDeactivated;
 

@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using SpaceCraft;
 using System;
+using TPCA.Core;
 using Unity.Netcode;
 
 namespace TPCA.Patches
@@ -25,7 +26,7 @@ namespace TPCA.Patches
                 return true;
             }
 
-            if (Environment.StackTrace.Contains(nameof(Archipelago.GameManager.UnlockItem))) // Execute the original method when called from the plugin
+            if (Environment.StackTrace.Contains(nameof(GameManager.UnlockItem))) // Execute the original method when called from the plugin
             {
                 Plugin.Log.LogDebug($"{nameof(UnlockGroupGlobally_Prefix)} => Method called from within the plugin (received item from AP server)");
                 return true;
