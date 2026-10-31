@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TPCA.Archipelago;
 using UnityEngine;
 
 namespace TPCA.Patches
@@ -76,7 +77,7 @@ namespace TPCA.Patches
             string infosJson = string.Empty;
             try
             {
-                infosJson = JsonConvert.SerializeObject(Plugin.State.SaveDatas);
+                infosJson = JsonConvert.SerializeObject(Plugin.State);
             }
             catch (Exception e)
             {
@@ -124,7 +125,7 @@ namespace TPCA.Patches
 
             if (lastLine != "@") // Normal game save end with a line containing only a "@"
             {
-                var infos = JsonConvert.DeserializeObject<ArchipelagoSaveDatas>(lastLine);
+                var infos = JsonConvert.DeserializeObject<ArchipelagoData>(lastLine);
                 Plugin.ArchipelagoDatasBySaveNames[_saveFileName] = infos;
             }
         }

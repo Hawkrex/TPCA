@@ -10,7 +10,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using TPCA.Archipelago.Enums;
 using TPCA.Core;
-using TPCA.Datas;
 
 namespace TPCA.Archipelago
 {
@@ -87,10 +86,7 @@ namespace TPCA.Archipelago
 
         public void OnConnect(LoginSuccessful login)
         {
-            if (!Plugin.State.SetupSession(login.SlotData, session.RoomState.Seed))
-            {
-                return;
-            }
+            Plugin.State.SlotData = new SlotData(login.SlotData);
 
             isAttemptingConnection = false;
             Plugin.State.ItemByLocations = ScoutAllLocations();
@@ -154,12 +150,7 @@ namespace TPCA.Archipelago
         {
             int index = helper.Index - 1;
             var item = helper.DequeueItem();
-            string itemName = item.ItemName;
-            if (ApData.ItemNames.TryGetValue((ApItemId)item.ItemId, out var name))
-            {
-                itemName = name;
-            }
-            itemName ??= item.ItemDisplayName;
+            string itemName = item.ItemName ?? item.ItemDisplayName;
 
             var player = item.Player;
             var playerName = player.Alias ?? player.Name ?? $"Player #{player.Slot}";
@@ -207,18 +198,6 @@ namespace TPCA.Archipelago
             AccessTools.Method(typeof(PopupsHandler), "AddToList").Invoke(Managers.GetManager<PopupsHandler>(), [popupData]);
         }
 
-        public bool SyncLocations(List<long> locations)
-        {
-            if (!IsConnected || locations == null || locations.Count == 0)
-            {
-                return false;
-            }
-
-            Plugin.Log.LogInfo($"Sending location checks: {string.Join(", ", locations)}");
-            _ = session.Locations.CompleteLocationChecksAsync([.. locations]);
-            return true;
-        }
-
         public Dictionary<string, ApItemInfo> ScoutAllLocations()
         {
             if (!IsConnected)
@@ -262,6 +241,8 @@ namespace TPCA.Archipelago
                 return;
             }
 
+            Plugin.Log.LogInfo($"{nameof(SendCompletion)} => Sending completion, GG!");
+
             session.SetGoalAchieved();
         }
 
@@ -285,24 +266,21 @@ namespace TPCA.Archipelago
                 Plugin.Log.LogWarning("Couldn't retrieve SeedName from the server, no GUID will be set!");
             }
 
-            Plugin.State.SaveDatas.Guid = session.RoomState.Seed;
-            Plugin.State.SaveDatas.Host = Plugin.State.Host;
-            Plugin.State.SaveDatas.PlayerName = Plugin.State.PlayerName;
-            Plugin.State.SaveDatas.Password = Plugin.State.Password;
+            Plugin.State.Guid = session.RoomState.Seed;
 
-            Plugin.Log.LogDebug($"Retrieved GUID <{Plugin.State.SaveDatas.Guid}>");
+            Plugin.Log.LogDebug($"Retrieved GUID <{Plugin.State.Guid}>");
         }
 
         private void FetchLocations()
         {
-            Plugin.State.SaveDatas.Locations = ScoutAllLocations();
+            Plugin.State.ItemByLocations = ScoutAllLocations();
 
-            if (!Plugin.State.SaveDatas.Locations.Any())
+            if (!Plugin.State.ItemByLocations.Any())
             {
                 Plugin.Log.LogWarning("Couldn't retrieve Locations from the server, no Locations will be set!");
             }
 
-            Plugin.Log.LogDebug($"Retrieved locations count <{Plugin.State.SaveDatas.Locations.Count()}>");
+            Plugin.Log.LogDebug($"Retrieved locations count <{Plugin.State.ItemByLocations.Count()}>");
         }
 
         internal string GetServerGuid()

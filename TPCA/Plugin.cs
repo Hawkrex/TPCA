@@ -14,8 +14,8 @@ namespace TPCA
     {
         internal static ManualLogSource Log;
         internal static ArchipelagoClient ArchipelagoClient;
-        internal static GameState State;
-        internal static Dictionary<string, ArchipelagoSaveDatas> ArchipelagoDatasBySaveNames = new();
+        public static ArchipelagoData State { get; set; } = new ArchipelagoData();
+        internal static Dictionary<string, ArchipelagoData> ArchipelagoDatasBySaveNames = new();
 
         internal static bool ArchipelagoModeDeactivated;
 
@@ -32,7 +32,6 @@ namespace TPCA
 
             harmony.PatchAll();
 
-            State = new("localhost:38281", "Player1", string.Empty);
             ArchipelagoClient = new();
 
             Log.LogInfo($"PluginName: {PluginInfo.PLUGIN_NAME}, VersionString: {PluginInfo.PLUGIN_VERSION} is loaded.");
