@@ -64,11 +64,6 @@ namespace TPCA.Core
             var loginResult = Plugin.ArchipelagoClient.TryConnect(); // On game loaded
             if (loginResult is LoginSuccessful loginSuccessful)
             {
-                if (Plugin.State.Guid != Plugin.ArchipelagoClient.GetServerGuid())
-                {
-                    Plugin.Log.LogWarning($"{nameof(LoadSave)} => Loading a save where the GUID doesn't match with the server automatically connected to, please check the informations of the server you are connected to!");
-                }
-
                 Plugin.ArchipelagoClient.OnConnect(loginSuccessful);
                 Plugin.Log.LogInfo($"{nameof(LoadSave)} => Automatic connection on save loading successful");
             }

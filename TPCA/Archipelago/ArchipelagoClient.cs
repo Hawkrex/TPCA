@@ -86,10 +86,15 @@ namespace TPCA.Archipelago
 
         public void OnConnect(LoginSuccessful login)
         {
-            Plugin.State.SlotData = new SlotData(login.SlotData);
+            if (Plugin.State.Guid != Plugin.ArchipelagoClient.GetServerGuid())
+            {
+                Plugin.Log.LogWarning($"{nameof(OnConnect)} => Connecting a save where the GUID doesn't match with the server automatically connected to, please check the informations of the server you are connected to!");
+            }
 
-            isAttemptingConnection = false;
+            Plugin.State.SlotData = new SlotData(login.SlotData);
             Plugin.State.ItemByLocations = ScoutAllLocations();
+
+            isAttemptingConnection = false;   
         }
 
         private void SetupSession()
@@ -148,18 +153,16 @@ namespace TPCA.Archipelago
 
         private void SessionItemReceived(IReceivedItemsHelper helper)
         {
-            int index = helper.Index - 1;
             var item = helper.DequeueItem();
             string itemName = item.ItemName ?? item.ItemDisplayName;
 
             var player = item.Player;
             var playerName = player.Alias ?? player.Name ?? $"Player #{player.Slot}";
 
-            Plugin.Log.LogInfo($"{nameof(SessionItemReceived)} => Received item #{index}: {item.ItemId} - {itemName} from {playerName}");
+            Plugin.Log.LogInfo($"{nameof(SessionItemReceived)} => Received item {item.ItemId} - {itemName} from {playerName}");
             GameManager.IncomingItems.Enqueue(new()
             {
                 Name = itemName,
-                Index = index,
                 Flags = item.Flags,
                 PlayerName = playerName,
                 IsLocal = player == session.ConnectionInfo.Slot,
@@ -227,11 +230,6 @@ namespace TPCA.Archipelago
             scouts.Wait();
 
             return scouts.Result;
-        }
-
-        public IEnumerable<string> GetLocationsNames()
-        {
-            return session.Locations.AllLocations.Select(x => session.Locations.GetLocationNameFromId(x));
         }
 
         public void SendCompletion()

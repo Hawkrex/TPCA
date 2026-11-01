@@ -12,7 +12,7 @@ namespace TPCA.Archipelago
 
         public string PlayerName { get; set; } = "Player1";
 
-        public string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
 
         public SlotData SlotData { get; set; }
 
