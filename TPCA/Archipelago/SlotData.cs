@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System;
 using System.Collections.Generic;
 using TPCA.Archipelago.Enums;
 
@@ -7,8 +9,15 @@ namespace TPCA.Archipelago
     // Informations sent by the server about the game
     internal class SlotData
     {
+        [JsonProperty("Goal")]
+        [JsonConverter(typeof(StringEnumConverter))]
         public Goal Goal { get; set; }
         public bool DeathLink { get; set; }
+
+        public SlotData()
+        {
+            // Used for Json deserialization
+        }
 
         public SlotData(IReadOnlyDictionary<string, object> slotData)
         {

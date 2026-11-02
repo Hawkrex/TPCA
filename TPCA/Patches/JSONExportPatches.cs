@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using SpaceCraft;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using TPCA.Archipelago;
@@ -125,7 +124,16 @@ namespace TPCA.Patches
 
             if (lastLine != "@") // Normal game save end with a line containing only a "@"
             {
-                var infos = JsonConvert.DeserializeObject<ArchipelagoData>(lastLine);
+                ArchipelagoData infos = null;
+                try
+                {
+                    infos = JsonConvert.DeserializeObject<ArchipelagoData>(lastLine);
+                }
+                catch (Exception ex)
+                {
+                    Plugin.Log.LogFatal($"{nameof(LoadFromJson_Postfix)} => Exception <{ex}>");
+                }
+
                 Plugin.ArchipelagoDatasBySaveNames[_saveFileName] = infos;
             }
         }
