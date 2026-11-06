@@ -94,7 +94,7 @@ namespace TPCA.Archipelago
             Plugin.State.SlotData = new SlotData(login.SlotData);
             Plugin.State.ItemByLocations = ScoutAllLocations();
 
-            isAttemptingConnection = false;   
+            isAttemptingConnection = false;
         }
 
         private void SetupSession()

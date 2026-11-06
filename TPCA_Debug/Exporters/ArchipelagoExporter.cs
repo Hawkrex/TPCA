@@ -30,7 +30,7 @@ namespace TPCA_Debug.Exporters
                 .Select(CreateArchipelagoItem));
 
             string json = JsonConvert.SerializeObject(archipelagoItems, Formatting.Indented);
-            
+
             var stringBuilder = new StringBuilder();
 
             stringBuilder.Append("ITEMS_JSON = ");

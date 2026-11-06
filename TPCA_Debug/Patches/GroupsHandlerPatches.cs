@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using HarmonyLib;
-using Newtonsoft.Json;
+﻿using HarmonyLib;
 using SpaceCraft;
-using TPCA_Debug.JsonModels;
+using System.Collections.Generic;
+using System.Text;
 
 namespace TPCA_Debug.Patches
 {

@@ -31,7 +31,7 @@ namespace TPCA_Debug.JsonModels
                 HideInCrafter = groupData.hideInCrafter;
                 UnlockingWorldUnit = groupData.unlockingWorldUnit.ToString();
                 UnlockingValue = groupData.unlockingValue;
-                if(groupData.terraformStageUnlock != null)
+                if (groupData.terraformStageUnlock != null)
                 {
                     TerraformStage = new TerraformStageJson(groupData.terraformStageUnlock);
                 }
