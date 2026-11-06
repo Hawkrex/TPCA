@@ -25,7 +25,13 @@ namespace TPCA.Patches
                 return true;
             }
 
-            if (Environment.StackTrace.Contains(nameof(GameManager.UnlockItem))) // Item received from AP server
+            //Plugin.Log.LogDebug($"{nameof(PopNewUnlockable_Prefix)} => StackTrace : {Environment.StackTrace}");
+
+            if (Environment.StackTrace.Contains("AlertUnlockables")) // Blueprint unlocked
+            {
+                return false;
+            }
+            else if (Environment.StackTrace.Contains(nameof(GameManager.UnlockItem))) // Item received from AP server
             {
                 Plugin.Log.LogDebug($"{nameof(PopNewUnlockable_Prefix)} => Received item from AP server, modifying the popup ...");
 
@@ -47,7 +53,6 @@ namespace TPCA.Patches
                 return false;
             }
 
-            //Plugin.Log.LogDebug($"{nameof(PopNewUnlockable_Prefix)} => StackTrace : {Environment.StackTrace}");
             return true;
         }
     }

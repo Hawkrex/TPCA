@@ -179,12 +179,12 @@ namespace TPCA.Archipelago
         {
             if (!IsConnected)
             {
-                Plugin.Log.LogWarning($"Trying to send location {group.id} but there is no connection");
+                Plugin.Log.LogWarning($"{nameof(SendLocation)} => Trying to send location {group.id} but there is no connection");
                 return;
             }
 
             long locationId = session.Locations.GetLocationIdFromName(GameName, group.id);
-            Plugin.Log.LogInfo($"Trying to send location {locationId}");
+            Plugin.Log.LogInfo($"{nameof(SendLocation)} => Trying to send location {locationId}");
             _ = session.Locations.CompleteLocationChecksAsync(locationId);
 
             // Show popup with the item sent informations when
