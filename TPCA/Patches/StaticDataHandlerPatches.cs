@@ -162,7 +162,7 @@ namespace TPCA.Patches
         /// <returns>true if the groupdata is an Archipelago location</returns>
         private static bool IsAnArchipelagoLocation(GroupData groupData)
         {
-            return Plugin.State.ItemByLocations.Keys.Contains(groupData.id);
+            return GameManager.State.ItemByLocations.Keys.Contains(groupData.id);
         }
 
         /// <summary>
@@ -202,7 +202,7 @@ namespace TPCA.Patches
             //Plugin.Log.LogDebug($"Modifying icon for {gd.id} ...");
 
             Texture2D texture;
-            var apItem = Plugin.State.ItemByLocations[groupDataId];
+            var apItem = GameManager.State.ItemByLocations[groupDataId];
             //Plugin.Log.LogDebug($"apItem.Name {apItem.Name}");
 
             if (apItem.IsTpcItem)

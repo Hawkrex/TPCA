@@ -11,6 +11,8 @@ namespace TPCA.Core
 {
     internal static class GameManager
     {
+        public static ArchipelagoData State { get; set; } = new ArchipelagoData();
+
         public static Queue<ApItemInfo> IncomingItems { get; } = new();
 
         public static List<Group> AllGroups { get; set; }
@@ -19,7 +21,7 @@ namespace TPCA.Core
 
         public static void LoadSave(string filename)
         {
-            Plugin.State = Plugin.ArchipelagoDatasBySaveNames[filename];
+            State = Plugin.ArchipelagoDatasBySaveNames[filename];
 
             var loginResult = Plugin.ArchipelagoClient.TryConnect(); // On game loaded
             if (loginResult is LoginSuccessful loginSuccessful)
@@ -79,7 +81,7 @@ namespace TPCA.Core
         public static bool UnlockItem(ApItemInfo item)
         {
             var groupToSend = AllGroups.FirstOrDefault(x => x.id == item.Name);
-            Plugin.State.ItemByLocations[groupToSend.id] = item;
+            State.ItemByLocations[groupToSend.id] = item;
 
             if (groupToSend != null)
             {
@@ -92,24 +94,24 @@ namespace TPCA.Core
         public static void CheckCompletion(DepartureType endingType)
         {
             Plugin.Log.LogDebug($"{nameof(CheckCompletion)} => Departure made with ending <{endingType}>");
-            Plugin.Log.LogDebug($"{nameof(CheckCompletion)} => Goal was <{Plugin.State.SlotData.Goal}>");
+            Plugin.Log.LogDebug($"{nameof(CheckCompletion)} => Goal was <{State.SlotData.Goal}>");
 
             switch (endingType)
             {
                 case DepartureType.EndingSentinel:
-                    if (Plugin.State.SlotData.Goal == Goal.PrimeSentinel)
+                    if (State.SlotData.Goal == Goal.PrimeSentinel)
                     {
                         Plugin.ArchipelagoClient.SendCompletion();
                     }
                     break;
                 case DepartureType.EndingRiley:
-                    if (Plugin.State.SlotData.Goal == Goal.PrimeSmugglers)
+                    if (State.SlotData.Goal == Goal.PrimeSmugglers)
                     {
                         Plugin.ArchipelagoClient.SendCompletion();
                     }
                     break;
                 case DepartureType.EndingWardens:
-                    if (Plugin.State.SlotData.Goal == Goal.PrimeWardens)
+                    if (State.SlotData.Goal == Goal.PrimeWardens)
                     {
                         Plugin.ArchipelagoClient.SendCompletion();
                     }

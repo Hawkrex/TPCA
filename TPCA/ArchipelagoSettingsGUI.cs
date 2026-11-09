@@ -1,4 +1,5 @@
 ﻿using TPCA.Archipelago.Enums;
+using TPCA.Core;
 using UnityEngine;
 
 namespace TPCA
@@ -56,19 +57,19 @@ namespace TPCA
             float hostY = titleFontSize + 60;
             GUI.Label(new(margin, hostY, labelWidth, labelHeight), "Host", labelStyle);
             GUI.SetNextControlName(hostNameControlName);
-            Plugin.State.Host = GUI.TextField(new(margin + labelWidth, hostY, textFieldWidth, textFieldHeight), Plugin.State.Host, textFieldStyle);
+            GameManager.State.Host = GUI.TextField(new(margin + labelWidth, hostY, textFieldWidth, textFieldHeight), GameManager.State.Host, textFieldStyle);
 
             // Player name
             float slotNameY = hostY + textFieldHeight + margin;
             GUI.Label(new(margin, slotNameY, labelWidth, labelHeight), "Player Name", labelStyle);
             GUI.SetNextControlName(playerNameControlName);
-            Plugin.State.PlayerName = GUI.TextField(new(margin + labelWidth, slotNameY, textFieldWidth, textFieldHeight), Plugin.State.PlayerName, textFieldStyle);
+            GameManager.State.PlayerName = GUI.TextField(new(margin + labelWidth, slotNameY, textFieldWidth, textFieldHeight), GameManager.State.PlayerName, textFieldStyle);
 
             // Password (optional)
             float passwordY = slotNameY + textFieldHeight + margin;
             GUI.Label(new(margin, passwordY, labelWidth, labelHeight), "Password", labelStyle);
             GUI.SetNextControlName(passwordControlName);
-            Plugin.State.Password = GUI.PasswordField(new(margin + labelWidth, passwordY, textFieldWidth, textFieldHeight), Plugin.State.Password, "*"[0], textFieldStyle);
+            GameManager.State.Password = GUI.PasswordField(new(margin + labelWidth, passwordY, textFieldWidth, textFieldHeight), GameManager.State.Password, "*"[0], textFieldStyle);
 
             float connectionStateX = (boxWidth - 450) / 2;
             float connectionStateY = passwordY + textFieldHeight + margin - 10;

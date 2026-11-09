@@ -36,13 +36,13 @@ namespace TPCA.Patches
                 Plugin.Log.LogDebug($"{nameof(PopNewUnlockable_Prefix)} => Received item from AP server, modifying the popup ...");
 
                 string message;
-                if (!Plugin.State.ItemByLocations.ContainsKey(_group.id))
+                if (!GameManager.State.ItemByLocations.ContainsKey(_group.id))
                 {
                     message = $"Received {_group.id}";
                 }
                 else
                 {
-                    message = $"Received {_group.id} from {Plugin.State.ItemByLocations[_group.id].PlayerName}";
+                    message = $"Received {_group.id} from {GameManager.State.ItemByLocations[_group.id].PlayerName}";
                 }
 
                 Plugin.Log.LogDebug($"{nameof(PopNewUnlockable_Prefix)} => Message : {message}");

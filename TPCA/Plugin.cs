@@ -14,7 +14,7 @@ namespace TPCA
     {
         internal static ManualLogSource Log;
         internal static ArchipelagoClient ArchipelagoClient;
-        public static ArchipelagoData State { get; set; } = new ArchipelagoData();
+
         internal static Dictionary<string, ArchipelagoData> ArchipelagoDatasBySaveNames = new();
 
         internal static bool ArchipelagoModeDeactivated;

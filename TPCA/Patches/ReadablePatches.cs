@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using SpaceCraft;
+using TPCA.Core;
 using TPCA.Datas;
 
 namespace TPCA.Patches
@@ -26,7 +27,7 @@ namespace TPCA.Patches
 
             if (_group is GroupLocation)
             {
-                var apItem = Plugin.State.ItemByLocations[_group.id];
+                var apItem = GameManager.State.ItemByLocations[_group.id];
 
                 __result = $"{apItem.PlayerName}'s {GetGroupName(apItem.Name)}";
                 return false;
@@ -66,7 +67,7 @@ namespace TPCA.Patches
 
             if (_group is GroupLocation)
             {
-                __result = GetGroupDescription(Plugin.State.ItemByLocations[_group.id].Name);
+                __result = GetGroupDescription(GameManager.State.ItemByLocations[_group.id].Name);
                 return false;
             }
 

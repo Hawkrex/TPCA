@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Linq;
 using TPCA.Archipelago;
+using TPCA.Core;
 using UnityEngine;
 
 namespace TPCA.Patches
@@ -76,7 +77,7 @@ namespace TPCA.Patches
             string infosJson = string.Empty;
             try
             {
-                infosJson = JsonConvert.SerializeObject(Plugin.State);
+                infosJson = JsonConvert.SerializeObject(GameManager.State);
             }
             catch (Exception e)
             {
