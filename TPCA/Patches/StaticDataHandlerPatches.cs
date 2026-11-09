@@ -356,7 +356,7 @@ namespace TPCA.Patches
         /// </summary>
         /// <param name="texturePath">Path of the texture from the plugin folder</param>
         /// <returns>The specified texture loaded</returns>
-        public static Texture2D LoadTexture(string texturePath)
+        private static Texture2D LoadTexture(string texturePath)
         {
             string path = Path.Combine(Paths.PluginPath, "TPCA", texturePath);
 

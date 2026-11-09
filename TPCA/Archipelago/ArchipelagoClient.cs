@@ -22,7 +22,6 @@ namespace TPCA.Archipelago
         public bool IsConnected => session?.Socket.Connected ?? false;
 
         private ArchipelagoSession session;
-
         private bool isAttemptingConnection;
 
         public LoginResult TryConnect()
@@ -97,15 +96,6 @@ namespace TPCA.Archipelago
             isAttemptingConnection = false;
         }
 
-        private void SetupSession()
-        {
-            session.Socket.ErrorReceived += SessionErrorReceived;
-            session.Socket.SocketOpened += SessionSocketOpened;
-            session.Socket.SocketClosed += SessionSocketClosed;
-            session.Items.ItemReceived += SessionItemReceived;
-            session.MessageLog.OnMessageReceived += SessionOnMessageReceived;
-        }
-
         public void Disconnect()
         {
             if (!IsConnected)
@@ -122,6 +112,15 @@ namespace TPCA.Archipelago
             session = null;
 
             ArchipelagoState = ArchipelagoState.NotConnected;
+        }
+
+        private void SetupSession()
+        {
+            session.Socket.ErrorReceived += SessionErrorReceived;
+            session.Socket.SocketOpened += SessionSocketOpened;
+            session.Socket.SocketClosed += SessionSocketClosed;
+            session.Items.ItemReceived += SessionItemReceived;
+            session.MessageLog.OnMessageReceived += SessionOnMessageReceived;
         }
 
         private void SessionErrorReceived(Exception ex, string message)
@@ -175,32 +174,6 @@ namespace TPCA.Archipelago
             Plugin.Log.LogMessage(message);
         }
 
-        public void SendLocation(Group group)
-        {
-            if (!IsConnected)
-            {
-                Plugin.Log.LogWarning($"{nameof(SendLocation)} => Trying to send location {group.id} but there is no connection");
-                return;
-            }
-
-            long locationId = session.Locations.GetLocationIdFromName(GameName, group.id);
-            Plugin.Log.LogInfo($"{nameof(SendLocation)} => Trying to send location {locationId}");
-            _ = session.Locations.CompleteLocationChecksAsync(locationId);
-
-            // Show popup with the item sent informations when
-            var itemInfos = Plugin.State.ItemByLocations[group.id];
-            if (!itemInfos.IsLocal)
-            {
-                SendPopup(new PopupData(group.GetImage(), $"Send item '{itemInfos.Name}' to {itemInfos.PlayerName}", 5f));
-            }
-        }
-
-        public static void SendPopup(PopupData popupData)
-        {
-            Plugin.Log.LogDebug($"{nameof(SendPopup)} => Message : {popupData.text}");
-            AccessTools.Method(typeof(PopupsHandler), "AddToList").Invoke(Managers.GetManager<PopupsHandler>(), [popupData]);
-        }
-
         public Dictionary<string, ApItemInfo> ScoutAllLocations()
         {
             if (!IsConnected)
@@ -232,19 +205,7 @@ namespace TPCA.Archipelago
             return scouts.Result;
         }
 
-        public void SendCompletion()
-        {
-            if (!IsConnected)
-            {
-                return;
-            }
-
-            Plugin.Log.LogInfo($"{nameof(SendCompletion)} => Sending completion, GG!");
-
-            session.SetGoalAchieved();
-        }
-
-        internal bool FetchGameDatas()
+        public bool FetchGameDatas()
         {
             if (!IsConnected)
             {
@@ -281,12 +242,50 @@ namespace TPCA.Archipelago
             Plugin.Log.LogDebug($"Retrieved locations count <{Plugin.State.ItemByLocations.Count()}>");
         }
 
-        internal string GetServerGuid()
+        public void SendLocation(Group group)
+        {
+            if (!IsConnected)
+            {
+                Plugin.Log.LogWarning($"{nameof(SendLocation)} => Trying to send location {group.id} but there is no connection");
+                return;
+            }
+
+            long locationId = session.Locations.GetLocationIdFromName(GameName, group.id);
+            Plugin.Log.LogInfo($"{nameof(SendLocation)} => Trying to send location {locationId}");
+            _ = session.Locations.CompleteLocationChecksAsync(locationId);
+
+            // Show popup with the item sent informations when
+            var itemInfos = Plugin.State.ItemByLocations[group.id];
+            if (!itemInfos.IsLocal)
+            {
+                SendPopup(new PopupData(group.GetImage(), $"Send item '{itemInfos.Name}' to {itemInfos.PlayerName}", 5f));
+            }
+        }
+
+        public static void SendPopup(PopupData popupData)
+        {
+            Plugin.Log.LogDebug($"{nameof(SendPopup)} => Message : {popupData.text}");
+            AccessTools.Method(typeof(PopupsHandler), "AddToList").Invoke(Managers.GetManager<PopupsHandler>(), [popupData]);
+        }
+
+        public void SendCompletion()
+        {
+            if (!IsConnected)
+            {
+                return;
+            }
+
+            Plugin.Log.LogInfo($"{nameof(SendCompletion)} => Sending completion, GG!");
+
+            session.SetGoalAchieved();
+        }
+
+        public string GetServerGuid()
         {
             return session.RoomState.Seed;
         }
 
-        internal void NotifyGuidAlreadyExists()
+        public void NotifyGuidAlreadyExists()
         {
             ArchipelagoState = ArchipelagoState.ConnectedButGuidExists;
         }
