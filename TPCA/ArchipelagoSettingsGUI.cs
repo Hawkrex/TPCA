@@ -75,29 +75,29 @@ namespace TPCA
             float connectionStateY = passwordY + textFieldHeight + margin - 10;
             string connectionState = string.Empty;
 
-            switch (Plugin.ArchipelagoClient.ArchipelagoState)
+            switch (Plugin.ArchipelagoClient.ArchipelagoConnectionState)
             {
-                case ArchipelagoState.NotConnected:
+                case ArchipelagoConnectionState.NotConnected:
                     connectionState = "Please connect to AP server first!";
                     labelStyle.normal.textColor = Color.yellow;
                     break;
 
-                case ArchipelagoState.Connecting: // Need to rewrite TryConnectAndLogin in async for this to work
+                case ArchipelagoConnectionState.Connecting: // Need to rewrite TryConnectAndLogin in async for this to work
                     connectionState = "Connecting to AP server ...";
                     labelStyle.normal.textColor = Color.white;
                     break;
 
-                case ArchipelagoState.ConnectionError:
+                case ArchipelagoConnectionState.ConnectionError:
                     connectionState = "Error connecting to AP server!";
                     labelStyle.normal.textColor = Color.red;
                     break;
 
-                case ArchipelagoState.ConnectedButGuidExists:
+                case ArchipelagoConnectionState.ConnectedButGuidExists:
                     connectionState = "Connected to AP server but a save has already been associated to this AP server and player!\r\nCreate a new save at your own risk!";
                     labelStyle.normal.textColor = Color.yellow;
                     break;
 
-                case ArchipelagoState.Connected:
+                case ArchipelagoConnectionState.Connected:
                     connectionState = "Connected to AP server.";
                     labelStyle.normal.textColor = Color.green;
                     break;

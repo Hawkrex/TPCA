@@ -32,7 +32,7 @@ namespace TPCA.Patches
                 return true;
             }
 
-            Plugin.Log.LogInfo($"{nameof(UnlockGroupGlobally_Prefix)} => Unlocked microchip location {group.id}");
+            Plugin.Log.LogInfo($"{nameof(UnlockGroupGlobally_Prefix)} => Unlocked microchip location <{group.id}>");
             Plugin.ArchipelagoClient.SendLocation(group);
 
             // Code from UnlockGroupGloballyServerRpc

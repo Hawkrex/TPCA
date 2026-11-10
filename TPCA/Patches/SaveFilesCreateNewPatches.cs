@@ -144,17 +144,11 @@ namespace TPCA.Patches
                     return false;
                 }
 
-                if (Plugin.ArchipelagoClient.FetchGameDatas())
-                {
-                    Plugin.ArchipelagoClient.Disconnect();
-                    ShowArchipelagoSettingsGUI = false;
+                Plugin.ArchipelagoClient.FetchGameDatas();
+                Plugin.ArchipelagoClient.Disconnect();
+                ShowArchipelagoSettingsGUI = false;
 
-                    return true;
-                }
-                else
-                {
-                    Plugin.Log.LogError("Couldn't fetch necessary datas to create the save file!");
-                }
+                return true;
             }
 
             return false;

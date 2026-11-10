@@ -26,7 +26,7 @@ namespace TPCA.Patches
                 return;
             }
 
-            GameManager.LoadSave(fileName);
+            GameManager.LoadSave(Plugin.ArchipelagoDatasBySaveNames[fileName]);
         }
 
         /// <summary>

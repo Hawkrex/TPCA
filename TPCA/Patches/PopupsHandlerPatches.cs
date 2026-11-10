@@ -25,8 +25,6 @@ namespace TPCA.Patches
                 return true;
             }
 
-            //Plugin.Log.LogDebug($"{nameof(PopNewUnlockable_Prefix)} => StackTrace : {Environment.StackTrace}");
-
             if (Environment.StackTrace.Contains("AlertUnlockables")) // Blueprint unlocked
             {
                 return false;

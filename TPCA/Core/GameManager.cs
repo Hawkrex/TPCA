@@ -19,9 +19,9 @@ namespace TPCA.Core
 
         private static HashSet<Group> previouslyKnownUnlockedGroups = new HashSet<Group>();
 
-        public static void LoadSave(string filename)
+        public static void LoadSave(ArchipelagoData state)
         {
-            State = Plugin.ArchipelagoDatasBySaveNames[filename];
+            State = state;
 
             var loginResult = Plugin.ArchipelagoClient.TryConnect(); // On game loaded
             if (loginResult is LoginSuccessful loginSuccessful)

@@ -18,7 +18,7 @@ namespace TPCA.Archipelago
         private const string MinArchipelagoVersion = "0.6.2";
         private const string GameName = "The Planet Crafter";
 
-        public ArchipelagoState ArchipelagoState { get; private set; }
+        public ArchipelagoConnectionState ArchipelagoConnectionState { get; private set; }
         public bool IsConnected => session?.Socket.Connected ?? false;
 
         private ArchipelagoSession session;
@@ -31,17 +31,17 @@ namespace TPCA.Archipelago
                 return new LoginFailure("Already trying to connect or already connected");
             }
 
-            ArchipelagoState = ArchipelagoState.Connecting; // Not even sure this will work withy an async version of TryConnectAndLogin
+            ArchipelagoConnectionState = ArchipelagoConnectionState.Connecting; // Not even sure this will work withy an async version of TryConnectAndLogin
 
             if (string.IsNullOrWhiteSpace(GameManager.State.Host))
             {
-                ArchipelagoState = ArchipelagoState.ConnectionError;
+                ArchipelagoConnectionState = ArchipelagoConnectionState.ConnectionError;
                 return new LoginFailure("Host Name is null or empty");
             }
 
             if (string.IsNullOrWhiteSpace(GameManager.State.PlayerName))
             {
-                ArchipelagoState = ArchipelagoState.ConnectionError;
+                ArchipelagoConnectionState = ArchipelagoConnectionState.ConnectionError;
                 return new LoginFailure("Player Name is null or empty");
             }
 
@@ -52,7 +52,7 @@ namespace TPCA.Archipelago
             }
             catch (Exception ex)
             {
-                ArchipelagoState = ArchipelagoState.ConnectionError;
+                ArchipelagoConnectionState = ArchipelagoConnectionState.ConnectionError;
                 return new LoginFailure($"Cannot create archipelago session: {ex}");
             }
 
@@ -72,13 +72,13 @@ namespace TPCA.Archipelago
             {
                 isAttemptingConnection = false;
                 session = null;
-                ArchipelagoState = ArchipelagoState.ConnectionError;
+                ArchipelagoConnectionState = ArchipelagoConnectionState.ConnectionError;
                 return new LoginFailure($"Cannot connect to AP server: {string.Join("\n", loginFailure.Errors)}");
             }
 
             Plugin.Log.LogInfo($"Successfully connected to {GameManager.State.Host} as {GameManager.State.PlayerName}");
 
-            ArchipelagoState = ArchipelagoState.Connected;
+            ArchipelagoConnectionState = ArchipelagoConnectionState.Connected;
 
             return loginResult as LoginSuccessful;
         }
@@ -111,7 +111,7 @@ namespace TPCA.Archipelago
 
             session = null;
 
-            ArchipelagoState = ArchipelagoState.NotConnected;
+            ArchipelagoConnectionState = ArchipelagoConnectionState.NotConnected;
         }
 
         private void SetupSession()
@@ -131,21 +131,21 @@ namespace TPCA.Archipelago
                 Plugin.Log.LogError(ex.ToString());
             }
 
-            ArchipelagoState = ArchipelagoState.ConnectionError;
+            ArchipelagoConnectionState = ArchipelagoConnectionState.ConnectionError;
 
             Disconnect();
         }
 
         private void SessionSocketOpened()
         {
-            ArchipelagoState = ArchipelagoState.Connected;
+            ArchipelagoConnectionState = ArchipelagoConnectionState.Connected;
         }
 
         private void SessionSocketClosed(string reason)
         {
             Plugin.Log.LogError($"Connection to Archipelago lost: {reason}");
 
-            ArchipelagoState = ArchipelagoState.NotConnected;
+            ArchipelagoConnectionState = ArchipelagoConnectionState.NotConnected;
 
             Disconnect();
         }
@@ -205,17 +205,10 @@ namespace TPCA.Archipelago
             return scouts.Result;
         }
 
-        public bool FetchGameDatas()
+        public void FetchGameDatas()
         {
-            if (!IsConnected)
-            {
-                return false;
-            }
-
             FetchGuid();
             FetchLocations();
-
-            return true;
         }
 
         private void FetchGuid()
@@ -287,7 +280,7 @@ namespace TPCA.Archipelago
 
         public void NotifyGuidAlreadyExists()
         {
-            ArchipelagoState = ArchipelagoState.ConnectedButGuidExists;
+            ArchipelagoConnectionState = ArchipelagoConnectionState.ConnectedButGuidExists;
         }
     }
 }
