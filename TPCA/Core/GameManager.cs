@@ -27,7 +27,7 @@ namespace TPCA.Core
             if (loginResult is LoginSuccessful loginSuccessful)
             {
                 Plugin.ArchipelagoClient.OnConnect(loginSuccessful);
-                Plugin.Log.LogInfo($"{nameof(LoadSave)} => Automatic connection on save loading successful");
+                Plugin.Log.LogInfo("LoadSave => Automatic connection on save loading successful.");
             }
         }
 
@@ -38,8 +38,8 @@ namespace TPCA.Core
             // Check for items received
             if (IncomingItems.TryDequeue(out var item))
             {
-                Plugin.Log.LogInfo($"{nameof(GameManager)}::{nameof(Update)} => Obtained item {item.Name}");
-                var display = UnlockItem(item);
+                Plugin.Log.LogInfo($"Update => Obtained item <{item.Name}>.");
+                UnlockItem(item);
             }
         }
 
@@ -69,7 +69,7 @@ namespace TPCA.Core
                 {
                     if (!previouslyKnownUnlockedGroups.Contains(group))
                     {
-                        Plugin.Log.LogInfo($"{nameof(GameManager)}::{nameof(CheckForLocationsUnlocked)} => Unlocked blueprint location {group.id}");
+                        Plugin.Log.LogInfo($"CheckForLocationsUnlocked => Unlocked blueprint location <{group.id}>.");
                         Plugin.ArchipelagoClient.SendLocation(group); // To test
 
                         previouslyKnownUnlockedGroups.Add(group);
@@ -78,7 +78,7 @@ namespace TPCA.Core
             }
         }
 
-        public static bool UnlockItem(ApItemInfo item)
+        public static void UnlockItem(ApItemInfo item)
         {
             var groupToSend = AllGroups.FirstOrDefault(x => x.id == item.Name);
             State.ItemByLocations[groupToSend.id] = item;
@@ -87,14 +87,12 @@ namespace TPCA.Core
             {
                 UnlockedGroupsHandler.Instance.UnlockGroupGlobally(groupToSend);
             }
-
-            return false;
         }
 
         public static void CheckCompletion(DepartureType endingType)
         {
-            Plugin.Log.LogDebug($"{nameof(CheckCompletion)} => Departure made with ending <{endingType}>");
-            Plugin.Log.LogDebug($"{nameof(CheckCompletion)} => Goal was <{State.SlotData.Goal}>");
+            Plugin.Log.LogDebug($"CheckCompletion => Departure made with ending <{endingType}>.");
+            Plugin.Log.LogDebug($"CheckCompletion => Goal was <{State.SlotData.Goal}>.");
 
             switch (endingType)
             {

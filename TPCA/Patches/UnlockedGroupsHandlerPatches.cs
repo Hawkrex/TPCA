@@ -28,11 +28,11 @@ namespace TPCA.Patches
 
             if (Environment.StackTrace.Contains(nameof(GameManager.UnlockItem))) // Execute the original method when called from the plugin
             {
-                Plugin.Log.LogDebug($"{nameof(UnlockGroupGlobally_Prefix)} => Method called from within the plugin (received item from AP server)");
+                Plugin.Log.LogDebug("UnlockGroupGlobally_Prefix => Method called from within the plugin (received item from AP server).");
                 return true;
             }
 
-            Plugin.Log.LogInfo($"{nameof(UnlockGroupGlobally_Prefix)} => Unlocked microchip location <{group.id}>");
+            Plugin.Log.LogInfo($"UnlockGroupGlobally_Prefix => Unlocked microchip location <{group.id}>.");
             Plugin.ArchipelagoClient.SendLocation(group);
 
             // Code from UnlockGroupGloballyServerRpc

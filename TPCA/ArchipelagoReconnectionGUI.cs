@@ -84,7 +84,7 @@ namespace TPCA
                     break;
 
                 case ArchipelagoConnectionState.Connecting: // Need to rewrite TryConnectAndLogin in async for this to work
-                    connectionState = "Connecting to AP server ...";
+                    connectionState = "Connecting to AP server...";
                     labelStyle.normal.textColor = Color.white;
                     break;
 

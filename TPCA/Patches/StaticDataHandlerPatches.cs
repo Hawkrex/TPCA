@@ -35,7 +35,7 @@ namespace TPCA.Patches
 
             if (!Plugin.ArchipelagoClient.IsConnected)
             {
-                Plugin.Log.LogWarning($"{nameof(LoadStaticData_Prefix)} => Launching game without connection to the server");
+                Plugin.Log.LogWarning($"LoadStaticData_Prefix => Launching game without connection to the server!");
             }
 
             var groupsData = __instance.staticAvailableObjects.groupsData;
@@ -85,26 +85,25 @@ namespace TPCA.Patches
         /// <param name="groupDatas">List of groupData to rewrite</param>
         private static List<Group> RewriteGroups(List<GroupData> groupDatas)
         {
-            Plugin.Log.LogDebug($"{nameof(RewriteGroups)} ...");
+            Plugin.Log.LogDebug($"RewriteGroups => Starting method ...");
 
             var list = new List<Group>();
 
-            //Plugin.Log.LogDebug("Creating new objects ...");
             foreach (var groupData in groupDatas)
             {
-                //Plugin.Log.LogDebug($"Processing {groupData.id} ...");
+                //Plugin.Log.LogDebug($"RewriteGroups => Processing <{groupData.id}>...");
 
                 if (groupData is GroupDataConstructible constructible)
                 {
                     if (IsAnArchipelagoLocation(groupData))
                     {
-                        Plugin.Log.LogDebug($"Add Archipelago Constructible {groupData.id}");
+                        Plugin.Log.LogDebug($"RewriteGroups => Add Archipelago Constructible <{groupData.id}>.");
                         list.Add(new GroupLocation(CreateAPLocationConstructible(CloneGroupDataConstructible(constructible))));
                         list.Add(new GroupConstructible(CreateAPItemConstructible(CloneGroupDataConstructible(constructible))));
                     }
                     else
                     {
-                        Plugin.Log.LogDebug($"Add normal Constructible {groupData.id}");
+                        Plugin.Log.LogDebug($"RewriteGroups => Add normal Constructible <{groupData.id}>.");
                         list.Add(new GroupConstructible(constructible));
                     }
                 }
@@ -112,19 +111,19 @@ namespace TPCA.Patches
                 {
                     if (IsAnArchipelagoLocation(groupData))
                     {
-                        Plugin.Log.LogDebug($"Add Archipelago Item {groupData.id}");
+                        Plugin.Log.LogDebug($"RewriteGroups => Add Archipelago Item <{groupData.id}>.");
                         list.Add(new GroupLocation(CreateAPLocationItem(CloneGroupDataItem(item))));
                         list.Add(new GroupItem(CreateAPItemItem(CloneGroupDataItem(item))));
                     }
                     else
                     {
-                        Plugin.Log.LogDebug($"Add normal Item {groupData.id}");
+                        Plugin.Log.LogDebug($"RewriteGroups => Add normal Item <{groupData.id}>.");
                         list.Add(new GroupItem(item));
                     }
                 }
             }
 
-            Plugin.Log.LogDebug($"{nameof(RewriteGroups)} done");
+            Plugin.Log.LogDebug($"RewriteGroups => Done");
 
             return list;
         }
@@ -141,7 +140,7 @@ namespace TPCA.Patches
                 {
                     foreach (var groupData2 in groupsData)
                     {
-                        //Plugin.Log.LogDebug($"SetRecipe for {groupData2.id} ...");
+                        //Plugin.Log.LogDebug($"SetGroupsRecipes => SetRecipe for <{groupData2.id}>...");
                         if (groupData2 is not null && groupData2.id == group.id && groupData2.recipeIngredients is not null)
                         {
                             group.SetRecipe(new Recipe(groupData2.recipeIngredients));
@@ -151,7 +150,7 @@ namespace TPCA.Patches
             }
             catch (Exception ex)
             {
-                Plugin.Log.LogError($"Error : {ex}");
+                Plugin.Log.LogError($"SetGroupsRecipes => Error while setting group recipes : {ex}");
             }
         }
 
@@ -199,24 +198,24 @@ namespace TPCA.Patches
         /// <returns>A new sprite with either the Planet Crafter object texture or the Archipelago texture</returns>
         private static Sprite ModifyIcon(string groupDataId)
         {
-            //Plugin.Log.LogDebug($"Modifying icon for {gd.id} ...");
+            //Plugin.Log.LogDebug($"ModifyIcon => Modifying icon for <{gd.id}>...");
 
             Texture2D texture;
             var apItem = GameManager.State.ItemByLocations[groupDataId];
-            //Plugin.Log.LogDebug($"apItem.Name {apItem.Name}");
+            //Plugin.Log.LogDebug($"ModifyIcon => apItem.Name <{apItem.Name}>.");
 
             if (apItem.IsTpcItem)
             {
-                //Plugin.Log.LogDebug($"Loading default texture");
+                //Plugin.Log.LogDebug($"ModifyIcon => Loading default texture...");
                 texture = GameManager.AllGroups.FirstOrDefault(x => x.id == apItem.Name)?.GetGroupData().icon.texture;
             }
             else
             {
-                //Plugin.Log.LogDebug($"Loading AP texture");
+                //Plugin.Log.LogDebug($"ModifyIcon => Loading AP texture.");
                 texture = archipelagoTexture;
             }
 
-            //Plugin.Log.LogDebug($"Icon modified");
+            //Plugin.Log.LogDebug($"ModifyIcon => Icon modified.");
 
             if (texture != null)
             {

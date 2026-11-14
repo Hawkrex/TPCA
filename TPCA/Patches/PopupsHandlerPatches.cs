@@ -31,7 +31,7 @@ namespace TPCA.Patches
             }
             else if (Environment.StackTrace.Contains(nameof(GameManager.UnlockItem))) // Item received from AP server
             {
-                Plugin.Log.LogDebug($"{nameof(PopNewUnlockable_Prefix)} => Received item from AP server, modifying the popup ...");
+                Plugin.Log.LogDebug($"PopNewUnlockable_Prefix => Received item from AP server, modifying the popup...");
 
                 string message;
                 if (!GameManager.State.ItemByLocations.ContainsKey(_group.id))
@@ -43,7 +43,7 @@ namespace TPCA.Patches
                     message = $"Received {_group.id} from {GameManager.State.ItemByLocations[_group.id].PlayerName}";
                 }
 
-                Plugin.Log.LogDebug($"{nameof(PopNewUnlockable_Prefix)} => Message : {message}");
+                Plugin.Log.LogDebug($"PopNewUnlockable_Prefix => Popup message : <{message}>.");
 
                 var popupData = new PopupData(_group.GetImage(), message, 5f);
                 AccessTools.Method(typeof(PopupsHandler), "AddToList").Invoke(__instance, [popupData]);

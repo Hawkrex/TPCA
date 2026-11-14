@@ -27,14 +27,14 @@ namespace TPCA
         {
             Log = base.Logger;
 
-            Log.LogInfo($"Game version: {Application.version}");
-            Log.LogInfo($"PluginName: {PluginInfo.PLUGIN_NAME}, VersionString: {PluginInfo.PLUGIN_VERSION} is loading...");
+            Log.LogInfo($"Awake => Game version: {Application.version}");
+            Log.LogInfo($"Awake => PluginName: {PluginInfo.PLUGIN_NAME}, VersionString: {PluginInfo.PLUGIN_VERSION} is loading...");
 
             harmony.PatchAll();
 
             ArchipelagoClient = new();
 
-            Log.LogInfo($"PluginName: {PluginInfo.PLUGIN_NAME}, VersionString: {PluginInfo.PLUGIN_VERSION} is loaded.");
+            Log.LogInfo($"Awake => PluginName: {PluginInfo.PLUGIN_NAME}, VersionString: {PluginInfo.PLUGIN_VERSION} is loaded.");
         }
 
         private void Update()

@@ -17,7 +17,7 @@ namespace TPCA.Patches
         [HarmonyPostfix]
         public static void SelectedSaveFile_Postfix(string fileName)
         {
-            Plugin.Log.LogDebug($"{nameof(SelectedSaveFile_Postfix)} => Selected save <{fileName}>");
+            Plugin.Log.LogDebug($"SelectedSaveFile_Postfix => Selected save <{fileName}>.");
 
             Plugin.ArchipelagoModeDeactivated = !Plugin.ArchipelagoDatasBySaveNames.ContainsKey(fileName);
 

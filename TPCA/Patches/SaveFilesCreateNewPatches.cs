@@ -58,7 +58,7 @@ namespace TPCA.Patches
         /// </summary>
         private static void OnArchipelagoModeChecked()
         {
-            Plugin.Log.LogInfo($"Archipelago mode checkbox state <{archipelagoModeCheckbox.GetStatus()}>");
+            Plugin.Log.LogInfo($"Archipelago mode checkbox state <{archipelagoModeCheckbox.GetStatus()}>.");
             Plugin.ArchipelagoModeDeactivated = !archipelagoModeCheckbox.GetStatus();
 
             ShowArchipelagoSettingsGUI = archipelagoModeCheckbox.GetStatus();
@@ -112,7 +112,7 @@ namespace TPCA.Patches
             passwordObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "Password";
             passwordObject.transform.position = new Vector3(1180, 500);
 
-            // Should add password but the rest doesn't work so ...
+            // Should add password but the rest doesn't work so...
 
             archipelagoContainer.SetActive(true);
         }*/

@@ -73,7 +73,7 @@ namespace TPCA.Patches
         /// <param name="saveFileName">Save file name</param>
         private static void SaveArchipelagoSaveDatas(string saveFileName)
         {
-            Plugin.Log.LogDebug($"{nameof(SaveArchipelagoSaveDatas)} => Saving file <{saveFileName}> ...");
+            Plugin.Log.LogDebug($"SaveArchipelagoSaveDatas => Saving file <{saveFileName}>...");
 
             string archipelagoDataJson = string.Empty;
             try
@@ -82,7 +82,7 @@ namespace TPCA.Patches
             }
             catch (Exception ex)
             {
-                Plugin.Log.LogFatal($"{nameof(SaveArchipelagoSaveDatas)} => Exception while trying to serialize Archipelago save datas : <{ex}>");
+                Plugin.Log.LogFatal($"SaveArchipelagoSaveDatas => Exception while trying to serialize Archipelago save datas : {ex}");
             }
 
             string filePath = GetFullSaveFilePath(saveFileName);
@@ -90,11 +90,11 @@ namespace TPCA.Patches
             {
                 File.AppendAllText(filePath, $"\r\n{archipelagoDataJson}\r\n@");
 
-                Plugin.Log.LogDebug($"{nameof(SaveArchipelagoSaveDatas)} => Saved file <{saveFileName}>");
+                Plugin.Log.LogDebug($"SaveArchipelagoSaveDatas => Saved file <{saveFileName}>.");
             }
             catch (Exception ex)
             {
-                Plugin.Log.LogError($"{nameof(SaveArchipelagoSaveDatas)} => Error saving archipelago datas into save <{saveFileName}> : <{ex}>");
+                Plugin.Log.LogError($"SaveArchipelagoSaveDatas => Error saving archipelago datas into save <{saveFileName}> : {ex}");
             }
         }
 
@@ -113,11 +113,11 @@ namespace TPCA.Patches
                 return;
             }
 
-            Plugin.Log.LogDebug($"{nameof(LoadFromJson_Postfix)} => Loading file <{_saveFileName}> ...");
+            Plugin.Log.LogDebug($"LoadFromJson_Postfix => Loading file <{_saveFileName}>...");
 
             if (Plugin.ArchipelagoDatasBySaveNames.ContainsKey(_saveFileName))
             {
-                Plugin.Log.LogDebug($"{nameof(LoadFromJson_Postfix)} => Infos already loaded for save <{_saveFileName}>");
+                Plugin.Log.LogDebug($"LoadFromJson_Postfix => Infos already loaded for save <{_saveFileName}>.");
                 return;
             }
 
@@ -126,18 +126,18 @@ namespace TPCA.Patches
                 string filePath = GetFullSaveFilePath(_saveFileName);
                 var fileContent = File.ReadLines(filePath);
                 string archipelagoDataJson = fileContent.ElementAt(fileContent.Count() - 2);
-                
-                if(archipelagoDataJson.StartsWith("{\"ModName\":\"TPCA\""))
+
+                if (archipelagoDataJson.StartsWith("{\"ModName\":\"TPCA\""))
                 {
                     Plugin.ArchipelagoDatasBySaveNames[_saveFileName] = JsonConvert.DeserializeObject<ArchipelagoData>(archipelagoDataJson);
                 }
             }
             catch (Exception ex)
             {
-                Plugin.Log.LogFatal($"{nameof(LoadFromJson_Postfix)} => Exception <{ex}>");
+                Plugin.Log.LogFatal($"LoadFromJson_Postfix => Error while trying to load archipelago datas from save file : {ex}");
             }
 
-            Plugin.Log.LogDebug($"{nameof(LoadFromJson_Postfix)} => Loaded file <{_saveFileName}>");
+            Plugin.Log.LogDebug($"LoadFromJson_Postfix => Loaded file <{_saveFileName}>.");
         }
 
         /// <summary>

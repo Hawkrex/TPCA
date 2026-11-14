@@ -28,7 +28,7 @@ namespace TPCA.Archipelago
         {
             if (IsConnected || isAttemptingConnection)
             {
-                return new LoginFailure("Already trying to connect or already connected");
+                return new LoginFailure("TryConnect => Already trying to connect or already connected!");
             }
 
             ArchipelagoConnectionState = ArchipelagoConnectionState.Connecting; // Not even sure this will work withy an async version of TryConnectAndLogin
@@ -36,13 +36,13 @@ namespace TPCA.Archipelago
             if (string.IsNullOrWhiteSpace(GameManager.State.Host))
             {
                 ArchipelagoConnectionState = ArchipelagoConnectionState.ConnectionError;
-                return new LoginFailure("Host Name is null or empty");
+                return new LoginFailure("TryConnect => Host Name is null or empty!");
             }
 
             if (string.IsNullOrWhiteSpace(GameManager.State.PlayerName))
             {
                 ArchipelagoConnectionState = ArchipelagoConnectionState.ConnectionError;
-                return new LoginFailure("Player Name is null or empty");
+                return new LoginFailure("TryConnect => Player Name is null or empty!");
             }
 
             try
@@ -53,7 +53,7 @@ namespace TPCA.Archipelago
             catch (Exception ex)
             {
                 ArchipelagoConnectionState = ArchipelagoConnectionState.ConnectionError;
-                return new LoginFailure($"Cannot create archipelago session: {ex}");
+                return new LoginFailure($"TryConnect => Cannot create archipelago session: {ex}");
             }
 
             LoginResult loginResult;
@@ -73,10 +73,10 @@ namespace TPCA.Archipelago
                 isAttemptingConnection = false;
                 session = null;
                 ArchipelagoConnectionState = ArchipelagoConnectionState.ConnectionError;
-                return new LoginFailure($"Cannot connect to AP server: {string.Join("\n", loginFailure.Errors)}");
+                return new LoginFailure($"TryConnect => Cannot connect to AP server: <{string.Join("\n", loginFailure.Errors)}>!");
             }
 
-            Plugin.Log.LogInfo($"Successfully connected to {GameManager.State.Host} as {GameManager.State.PlayerName}");
+            Plugin.Log.LogInfo($"TryConnect => Successfully connected to <{GameManager.State.Host}> as <{GameManager.State.PlayerName}>.");
 
             ArchipelagoConnectionState = ArchipelagoConnectionState.Connected;
 
@@ -87,7 +87,7 @@ namespace TPCA.Archipelago
         {
             if (GameManager.State.Guid != Plugin.ArchipelagoClient.GetServerGuid())
             {
-                Plugin.Log.LogWarning($"{nameof(OnConnect)} => Connecting a save where the GUID doesn't match with the server automatically connected to, please check the informations of the server you are connected to!");
+                Plugin.Log.LogWarning($"OnConnect => Connecting a save where the GUID <{GameManager.State.Guid}> doesn't match with the server automatically connected to <{Plugin.ArchipelagoClient.GetServerGuid()}>, please check the informations of the server you are connected to!");
             }
 
             GameManager.State.SlotData = new SlotData(login.SlotData);
@@ -104,9 +104,9 @@ namespace TPCA.Archipelago
 
             isAttemptingConnection = false;
 
-            Plugin.Log.LogDebug("Disconnecting ...");
+            Plugin.Log.LogDebug("Disconnect => Disconnecting...");
             Task.Run(() => { _ = session.Socket.DisconnectAsync(); }).Wait();
-            Plugin.Log.LogDebug("Disconnected");
+            Plugin.Log.LogDebug("Disconnect => Disconnected.");
 
             session = null;
 
@@ -142,7 +142,7 @@ namespace TPCA.Archipelago
 
         private void SessionSocketClosed(string reason)
         {
-            Plugin.Log.LogError($"Connection to Archipelago lost: {reason}");
+            Plugin.Log.LogError($"SessionSocketClosed => Connection to Archipelago lost: <{reason}>!");
 
             ArchipelagoConnectionState = ArchipelagoConnectionState.NotConnected;
 
@@ -157,7 +157,7 @@ namespace TPCA.Archipelago
             var player = item.Player;
             var playerName = player.Alias ?? player.Name ?? $"Player #{player.Slot}";
 
-            Plugin.Log.LogInfo($"{nameof(SessionItemReceived)} => Received item {item.ItemId} - {itemName} from {playerName}");
+            Plugin.Log.LogInfo($"SessionItemReceived => Received item <{item.ItemId}> - <{itemName}> from <{playerName}>.");
             GameManager.IncomingItems.Enqueue(new()
             {
                 Name = itemName,
@@ -181,10 +181,10 @@ namespace TPCA.Archipelago
             }
 
             GameManager.State.Guid = FetchGuid();
-            Plugin.Log.LogDebug($"Retrieved GUID <{GameManager.State.Guid}>");
+            Plugin.Log.LogDebug($"GetInitialDataFromServer => Retrieved GUID <{GameManager.State.Guid}>.");
 
             GameManager.State.ItemByLocations = FetchAllLocations();
-            Plugin.Log.LogDebug($"Retrieved locations count <{GameManager.State.ItemByLocations.Count()}>");
+            Plugin.Log.LogDebug($"GetInitialDataFromServer => Retrieved locations count <{GameManager.State.ItemByLocations.Count()}>.");
 
             Disconnect();
 
@@ -197,7 +197,7 @@ namespace TPCA.Archipelago
             {
                 if (archipelagoData.Value.Guid == GetServerGuid())
                 {
-                    Plugin.Log.LogError($"The save <{archipelagoData.Key}> already exists with the same GUID <{archipelagoData.Value.Guid}> as the server one!");
+                    Plugin.Log.LogError($"DoesSaveAlreadyExistsWithGuid => The save <{archipelagoData.Key}> already exists with the same GUID <{archipelagoData.Value.Guid}> as the server one!");
 
                     NotifyGuidAlreadyExists();
                     return true;
@@ -211,10 +211,10 @@ namespace TPCA.Archipelago
         {
             if (string.IsNullOrEmpty(session.RoomState.Seed))
             {
-                Plugin.Log.LogWarning("Couldn't retrieve SeedName from the server!");
+                Plugin.Log.LogWarning("FetchGuid => Couldn't retrieve SeedName from the server!");
             }
 
-            return session.RoomState.Seed; 
+            return session.RoomState.Seed;
         }
 
         private Dictionary<string, ApItemInfo> FetchAllLocations()
@@ -247,7 +247,7 @@ namespace TPCA.Archipelago
 
             if (!scouts.Result.Any())
             {
-                Plugin.Log.LogWarning($"{nameof(FetchAllLocations)} => Couldn't retrieve Locations from the server!");
+                Plugin.Log.LogWarning($"FetchAllLocations => Couldn't retrieve Locations from the server!");
             }
 
             return scouts.Result;
@@ -257,12 +257,12 @@ namespace TPCA.Archipelago
         {
             if (!IsConnected)
             {
-                Plugin.Log.LogWarning($"{nameof(SendLocation)} => Trying to send location {group.id} but there is no connection");
+                Plugin.Log.LogWarning($"SendLocation => Trying to send location <{group.id}> but there is no connection!");
                 return;
             }
 
             long locationId = session.Locations.GetLocationIdFromName(GameName, group.id);
-            Plugin.Log.LogInfo($"{nameof(SendLocation)} => Trying to send location {locationId}");
+            Plugin.Log.LogInfo($"SendLocation => Trying to send location <{locationId}>.");
             _ = session.Locations.CompleteLocationChecksAsync(locationId);
 
             // Show popup with the item sent informations when
@@ -275,7 +275,7 @@ namespace TPCA.Archipelago
 
         public static void SendPopup(PopupData popupData)
         {
-            Plugin.Log.LogDebug($"{nameof(SendPopup)} => Message : {popupData.text}");
+            Plugin.Log.LogDebug($"SendPopup => Message : <{popupData.text}>.");
             AccessTools.Method(typeof(PopupsHandler), "AddToList").Invoke(Managers.GetManager<PopupsHandler>(), [popupData]);
         }
 
@@ -286,7 +286,7 @@ namespace TPCA.Archipelago
                 return;
             }
 
-            Plugin.Log.LogInfo($"{nameof(SendCompletion)} => Sending completion, GG!");
+            Plugin.Log.LogInfo("SendCompletion => Sending completion, GG!");
 
             session.SetGoalAchieved();
         }
