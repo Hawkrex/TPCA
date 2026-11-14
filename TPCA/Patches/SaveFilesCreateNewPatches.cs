@@ -120,7 +120,7 @@ namespace TPCA.Patches
         /// <summary>
         /// Executes before or override the method
         /// Called when the player clicks on Create in the save creation menu
-        /// If Archipelago mode is activated, try to connect to the server. If it fails, warns the user and prevent from creating the save
+        /// If Archipelago mode is activated, tries to connect to the server. If it fails, warns the user and prevent from creating the save
         /// </summary>
         /// <param name="__instance"></param>
         /// <param name="____jsonableGameSettings"></param>
@@ -136,35 +136,12 @@ namespace TPCA.Patches
                 return true;
             }
 
-            // If we are connected to the AP server, we fetch AP datas (SeedName and Locations)
-            if (Plugin.ArchipelagoClient.IsConnected)
+            bool result = Plugin.ArchipelagoClient.GetInitialDataFromServer();
+            if (result)
             {
-                if (DoesSaveAlreadyExistsWithGuid())
-                {
-                    return false;
-                }
-
-                Plugin.ArchipelagoClient.FetchGameDatas();
-                Plugin.ArchipelagoClient.Disconnect();
                 ShowArchipelagoSettingsGUI = false;
 
                 return true;
-            }
-
-            return false;
-        }
-
-        private static bool DoesSaveAlreadyExistsWithGuid()
-        {
-            foreach (var datas in Plugin.ArchipelagoDatasBySaveNames)
-            {
-                if (datas.Value.Guid == Plugin.ArchipelagoClient.GetServerGuid())
-                {
-                    Plugin.Log.LogError($"The save <{datas.Key}> already exists with the same GUID <{datas.Value.Guid}> as the server one!");
-
-                    Plugin.ArchipelagoClient.NotifyGuidAlreadyExists();
-                    return true;
-                }
             }
 
             return false;

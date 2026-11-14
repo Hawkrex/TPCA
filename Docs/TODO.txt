@@ -1,6 +1,4 @@
-Work on ArchipelagoData uses
 Work on Popups in game (PopupsHandlerPatches, ReadablePatches)
-Rework SaveFilesCreateNewPatches.DoesSaveAlreadyExistsWithGuid
 Check StaticDataHandlerPatches
 Check GameManager
 Check ArchipelagoClient

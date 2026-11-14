@@ -29,8 +29,8 @@ namespace TPCA.Patches
 
             CreateArchipelagoIdTextComponent(___gameModeText);
 
-            var archipelagoInfos = Plugin.ArchipelagoDatasBySaveNames[fileName];
-            text.text = $"AP   {archipelagoInfos.Guid}";
+            var archipelagoData = Plugin.ArchipelagoDatasBySaveNames[fileName];
+            text.text = $"AP   {archipelagoData.Guid}";
 
             text.GetComponent<RectTransform>().localPosition += new Vector3(10, 10);
             text.GetComponent<RectTransform>().sizeDelta = new Vector2(260, 20);

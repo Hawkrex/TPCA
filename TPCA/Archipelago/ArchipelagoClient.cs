@@ -91,7 +91,6 @@ namespace TPCA.Archipelago
             }
 
             GameManager.State.SlotData = new SlotData(login.SlotData);
-            GameManager.State.ItemByLocations = ScoutAllLocations();
 
             isAttemptingConnection = false;
         }
@@ -174,7 +173,51 @@ namespace TPCA.Archipelago
             Plugin.Log.LogMessage(message);
         }
 
-        public Dictionary<string, ApItemInfo> ScoutAllLocations()
+        public bool GetInitialDataFromServer()
+        {
+            if (!Plugin.ArchipelagoClient.IsConnected || DoesSaveAlreadyExistsWithGuid())
+            {
+                return false;
+            }
+
+            GameManager.State.Guid = FetchGuid();
+            Plugin.Log.LogDebug($"Retrieved GUID <{GameManager.State.Guid}>");
+
+            GameManager.State.ItemByLocations = FetchAllLocations();
+            Plugin.Log.LogDebug($"Retrieved locations count <{GameManager.State.ItemByLocations.Count()}>");
+
+            Disconnect();
+
+            return true;
+        }
+
+        private bool DoesSaveAlreadyExistsWithGuid()
+        {
+            foreach (var archipelagoData in Plugin.ArchipelagoDatasBySaveNames)
+            {
+                if (archipelagoData.Value.Guid == GetServerGuid())
+                {
+                    Plugin.Log.LogError($"The save <{archipelagoData.Key}> already exists with the same GUID <{archipelagoData.Value.Guid}> as the server one!");
+
+                    NotifyGuidAlreadyExists();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private string FetchGuid()
+        {
+            if (string.IsNullOrEmpty(session.RoomState.Seed))
+            {
+                Plugin.Log.LogWarning("Couldn't retrieve SeedName from the server!");
+            }
+
+            return session.RoomState.Seed; 
+        }
+
+        private Dictionary<string, ApItemInfo> FetchAllLocations()
         {
             if (!IsConnected)
             {
@@ -202,37 +245,12 @@ namespace TPCA.Archipelago
             });
             scouts.Wait();
 
+            if (!scouts.Result.Any())
+            {
+                Plugin.Log.LogWarning($"{nameof(FetchAllLocations)} => Couldn't retrieve Locations from the server!");
+            }
+
             return scouts.Result;
-        }
-
-        public void FetchGameDatas()
-        {
-            FetchGuid();
-            FetchLocations();
-        }
-
-        private void FetchGuid()
-        {
-            if (string.IsNullOrEmpty(session.RoomState.Seed))
-            {
-                Plugin.Log.LogWarning("Couldn't retrieve SeedName from the server, no GUID will be set!");
-            }
-
-            GameManager.State.Guid = session.RoomState.Seed;
-
-            Plugin.Log.LogDebug($"Retrieved GUID <{GameManager.State.Guid}>");
-        }
-
-        private void FetchLocations()
-        {
-            GameManager.State.ItemByLocations = ScoutAllLocations();
-
-            if (!GameManager.State.ItemByLocations.Any())
-            {
-                Plugin.Log.LogWarning("Couldn't retrieve Locations from the server, no Locations will be set!");
-            }
-
-            Plugin.Log.LogDebug($"Retrieved locations count <{GameManager.State.ItemByLocations.Count()}>");
         }
 
         public void SendLocation(Group group)
