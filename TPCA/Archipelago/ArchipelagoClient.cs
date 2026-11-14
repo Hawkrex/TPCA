@@ -273,7 +273,7 @@ namespace TPCA.Archipelago
             }
         }
 
-        public static void SendPopup(PopupData popupData)
+        private void SendPopup(PopupData popupData)
         {
             Plugin.Log.LogDebug($"SendPopup => Message : <{popupData.text}>.");
             AccessTools.Method(typeof(PopupsHandler), "AddToList").Invoke(Managers.GetManager<PopupsHandler>(), [popupData]);
@@ -291,12 +291,12 @@ namespace TPCA.Archipelago
             session.SetGoalAchieved();
         }
 
-        public string GetServerGuid()
+        private string GetServerGuid()
         {
             return session.RoomState.Seed;
         }
 
-        public void NotifyGuidAlreadyExists()
+        private void NotifyGuidAlreadyExists()
         {
             ArchipelagoConnectionState = ArchipelagoConnectionState.ConnectedButGuidExists;
         }

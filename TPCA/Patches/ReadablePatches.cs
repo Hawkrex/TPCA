@@ -41,7 +41,7 @@ namespace TPCA.Patches
         /// </summary>
         /// <param name="groupId">Group Id to translate</param>
         /// <returns>The readable name of the group</returns>
-        public static string GetGroupName(string groupId)
+        private static string GetGroupName(string groupId)
         {
             string localizedString = Localization.GetLocalizedString(GameConfig.localizationGroupNameId + groupId);
 
@@ -79,7 +79,7 @@ namespace TPCA.Patches
         /// </summary>
         /// <param name="groupId">Group Id to translate</param>
         /// <returns>The readable description of the group</returns>
-        public static string GetGroupDescription(string groupId)
+        private static string GetGroupDescription(string groupId)
         {
             return Localization.GetLocalizedString(GameConfig.localizationGroupDescriptionId + groupId);
         }
