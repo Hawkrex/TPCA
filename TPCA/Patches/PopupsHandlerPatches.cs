@@ -25,7 +25,8 @@ namespace TPCA.Patches
                 return true;
             }
 
-            if (Environment.StackTrace.Contains("AlertUnlockables")) // Blueprint unlocked
+            // Deactivate all popups coming from the game code
+            if (Environment.StackTrace.Contains("AlertUnlockables"))
             {
                 return false;
             }

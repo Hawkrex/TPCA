@@ -2,7 +2,6 @@
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
-using HarmonyLib;
 using SpaceCraft;
 using System;
 using System.Collections.Generic;
@@ -269,14 +268,8 @@ namespace TPCA.Archipelago
             var itemInfos = GameManager.State.ItemByLocations[group.id];
             if (!itemInfos.IsLocal)
             {
-                SendPopup(new PopupData(group.GetImage(), $"Send item '{itemInfos.Name}' to {itemInfos.PlayerName}", 5f));
+                GameManager.SendPopup(new PopupData(group.GetImage(), $"Send item '{itemInfos.Name}' to {itemInfos.PlayerName}", 5f));
             }
-        }
-
-        private void SendPopup(PopupData popupData)
-        {
-            Plugin.Log.LogDebug($"SendPopup => Message : <{popupData.text}>.");
-            AccessTools.Method(typeof(PopupsHandler), "AddToList").Invoke(Managers.GetManager<PopupsHandler>(), [popupData]);
         }
 
         public void SendCompletion()

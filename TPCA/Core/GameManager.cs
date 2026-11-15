@@ -1,4 +1,5 @@
 ﻿using Archipelago.MultiClient.Net;
+using HarmonyLib;
 using SpaceCraft;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,12 @@ namespace TPCA.Core
                 Plugin.ArchipelagoClient.OnConnect(loginSuccessful);
                 Plugin.Log.LogInfo("LoadSave => Automatic connection on save loading successful.");
             }
+        }
+
+        public static void SendPopup(PopupData popupData)
+        {
+            Plugin.Log.LogDebug($"SendPopup => Message : <{popupData.text}>.");
+            AccessTools.Method(typeof(PopupsHandler), "AddToList").Invoke(Managers.GetManager<PopupsHandler>(), [popupData]);
         }
 
         public static void Update()
