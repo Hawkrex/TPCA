@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TPCA.Archipelago;
 using TPCA.Archipelago.Enums;
+using TPCA.Datas;
 using static SpaceCraft.MachineDeparturePlatform;
 
 namespace TPCA.Core
@@ -77,7 +78,14 @@ namespace TPCA.Core
                     if (!previouslyKnownUnlockedGroups.Contains(group))
                     {
                         Plugin.Log.LogInfo($"CheckForLocationsUnlocked => Unlocked blueprint location <{group.id}>.");
-                        Plugin.ArchipelagoClient.SendLocation(group); // To test
+                        if (group is GroupLocation groupLocation)
+                        {
+                            Plugin.ArchipelagoClient.SendLocation(groupLocation);
+                        }
+                        else
+                        {
+                            Plugin.Log.LogError($"CheckForLocationsUnlocked => The group is not a GroupLocation, cannot send location!");
+                        }
 
                         previouslyKnownUnlockedGroups.Add(group);
                     }

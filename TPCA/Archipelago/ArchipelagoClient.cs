@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TPCA.Archipelago.Enums;
 using TPCA.Core;
+using TPCA.Datas;
 
 namespace TPCA.Archipelago
 {
@@ -252,23 +253,23 @@ namespace TPCA.Archipelago
             return scouts.Result;
         }
 
-        public void SendLocation(Group group)
+        public void SendLocation(GroupLocation groupToSend)
         {
             if (!IsConnected)
             {
-                Plugin.Log.LogWarning($"SendLocation => Trying to send location <{group.id}> but there is no connection!");
+                Plugin.Log.LogWarning($"SendLocation => Trying to send location <{groupToSend.id}> but there is no connection!");
                 return;
             }
 
-            long locationId = session.Locations.GetLocationIdFromName(GameName, group.id);
+            long locationId = session.Locations.GetLocationIdFromName(GameName, groupToSend.id);
             Plugin.Log.LogInfo($"SendLocation => Trying to send location <{locationId}>.");
             _ = session.Locations.CompleteLocationChecksAsync(locationId);
 
             // Show popup with the item sent informations when
-            var itemInfos = GameManager.State.ItemByLocations[group.id];
+            var itemInfos = GameManager.State.ItemByLocations[groupToSend.id];
             if (!itemInfos.IsLocal)
             {
-                GameManager.SendPopup(new PopupData(group.GetImage(), $"Send item '{itemInfos.Name}' to {itemInfos.PlayerName}", 5f));
+                GameManager.SendPopup(new PopupData(groupToSend.GetImage(), $"Send item '{itemInfos.Name}' to {itemInfos.PlayerName}", 5f));
             }
         }
 

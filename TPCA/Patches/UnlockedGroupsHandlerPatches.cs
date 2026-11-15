@@ -1,7 +1,9 @@
 ﻿using HarmonyLib;
 using SpaceCraft;
 using System;
+using System.Linq;
 using TPCA.Core;
+using TPCA.Datas;
 using Unity.Netcode;
 
 namespace TPCA.Patches
@@ -33,7 +35,16 @@ namespace TPCA.Patches
             }
 
             Plugin.Log.LogInfo($"UnlockGroupGlobally_Prefix => Unlocked microchip location <{group.id}>.");
-            Plugin.ArchipelagoClient.SendLocation(group);
+
+            var groupLocation = GroupsHandler.GetAllGroups().OfType<GroupLocation>().ToList().FirstOrDefault(x => x.id == group.id);
+            if (groupLocation != null)
+            {
+                Plugin.ArchipelagoClient.SendLocation(groupLocation);
+            }
+            else
+            {
+                Plugin.Log.LogError($"UnlockGroupGlobally_Prefix => The GroupLocation cannot be found from the group unlocked, cannot send location!");
+            }
 
             // Code from UnlockGroupGloballyServerRpc
             // Fixes microchip blueprints not working after Tier1
