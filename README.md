@@ -2,8 +2,10 @@
 
 This is the client for the **people who wants to play The Planet Crafter Archipelago**, you can find the [ap world](https://github.com/Hawkrex/Archipelago-ThePlanetCrafter) here for the **Archipelago server host**.
 
+The latest release can be downloaded here : [**v0.0.3-poc DO NOT USE FOR REAL GAMES**](https://github.com/Hawkrex/TPCA/releases/tag/v0.0.3-poc)
+
 ## Installation
-- Go to this repo `releases` page
+- Go to this repo `releases` page (or click the link above)
 - Download the `The Planet Crafter.yaml` and the `TPCA.zip`
 - Customize your `The Planet Crafter.yaml` with your favorite text editor and send it to your **Archipelago server host**
 - Install `BepinEx` following the [guide available here](https://docs.bepinex.dev/articles/user_guide/installation/index.html)
@@ -40,7 +42,12 @@ Before submitting an issue on this repo, you should activate the debug logs in B
 - Go to the `BepinEx/config` folder, edit the `BepInEx.cfg` config file by finding the `[Logging.Disk]` tag, underneath you should find the parameter `LogLevels` : make it `LogLevels = All` to enable all levels of logs
 - Then play and reproduce the bug you found if you can (or prepare this config before you play the first time)
 - During your play, the `LogOutput.log` file is generated in real time in the `BepinEx` folder
-- Create an issue with a nice title, a description of what happened in the game, a copy of the `LogOutput.log` file and a copy of your save (before the issue happening / Save folder is in your `AppData\LocalLow\MijuGames\Planet Crafter`)
+- Create an issue with :
+  - A nice title
+  - A description of what happened in the game and a copy of the `LogOutput.log` file
+  - A screenshot of the problem
+  - A copy of your save (before the issue happened, the save folder is in your `AppData\LocalLow\MijuGames\Planet Crafter`)
+  - A copy of the spoiler log (ask the person who created the AP server to provide you this)
 
 Issues with the most informations (description + debug log + save) will have the most chances to be resolved
 
